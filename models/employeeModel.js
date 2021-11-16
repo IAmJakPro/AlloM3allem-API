@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const Review = require('../models/reviewModel');
+const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
+const filterObj = require('../utils/filterObj');
 
 const employeeSchema = mongoose.Schema(
   {
@@ -48,15 +49,62 @@ const employeeSchema = mongoose.Schema(
   }
 );
 
-employeeSchema.pre(/^find/, function (next) {
-  this.populate('user');
+employeeSchema.plugin(aggregatePaginate);
+
+employeeSchema.post('aggregate', softDeleteAggregateMiddleware);
+
+function softDeleteAggregateMiddleware(next) {
+  // Get the current aggregation pipeline and prepend a `$match` that excludes
+  // all soft-deleted docs
+  this.pipeline().unshift(
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'user',
+        foreignField: '_id',
+        as: 'user',
+      },
+    },
+    {
+      $unwind: '$user',
+    },
+    {
+      $match: { 'user.status': 'active' },
+    }
+  );
+  //next();
+}
+
+employeeSchema.pre(/^find/, async function (next) {
+  this.populate('workIn', 'name').populate('service', 'name');
   next();
 });
 
-employeeSchema.method('toClient', function () {
+employeeSchema.method('toClient', function (isAdmin, lang) {
   let obj = this.toObject({ getters: true });
+  /* 
+  if (lang) {
+    if (obj.workIn && obj.workIn.length > 0) {
+      let newWorkIn = [];
+      for (const city of obj.workIn) {
+        newWorkIn.push(city.name[lang]);
+      }
+      obj.workIn = newWorkIn;
+    }
 
-  delete obj._id;
+    if (obj.service) {
+      obj.service = obj.service.name[lang];
+    }
+
+    if (obj.user && obj.user.city) {
+      obj.user.city = obj.user.city.name[lang];
+    }
+  }
+
+  obj = Object.assign(
+    filterObj(obj, false, 'id', '_id', 'user'),
+    filterObj(obj.user, false, '_id', 'id', 'status')
+  ); */
 
   return obj;
 });

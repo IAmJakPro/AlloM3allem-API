@@ -10,6 +10,7 @@ const pageController = require('../controllers/pageController');
 const router = express.Router();
 
 router.get('/slug/:id', pageController.getPageBySlug); // id = slug
+
 router.get('/', pageController.getAllPages);
 
 router.use(authMiddleware.checkLoggedAdmin);

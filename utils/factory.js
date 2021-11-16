@@ -2,11 +2,16 @@
  * Note: Every function here naturally returns the asyncHandler and its insides.
  * Arrow function naturally returns everything if declared without curly brackets.
  */
+// Third party libraries
+const jwt = require('jsonwebtoken');
 
 // Utils
 const AppError = require('./appError');
 const asyncHandler = require('./asyncHandler');
 const filterObj = require('./filterObj');
+
+// Models
+const Admin = require('../models/adminModel');
 
 /**
  * This function is used to populate items
@@ -43,17 +48,45 @@ const getLang = (headers) => {
  * @param {Object} req - the request object
  * @returns boolean
  */
-const isAdmin = (req) => {
-  if (req.admin) {
+const checkIsAdminLoggedIn = async (req) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  } else {
+    return false;
+  }
+
+  const verifiedToken = jwt.verify(
+    token,
+    process.env.JWT_SECRET,
+    (err, decoded) => {
+      return decoded;
+    }
+  );
+
+  if (!verifiedToken || verifiedToken.type !== 'jwtAdmin') {
+    return false;
+  }
+
+  const loggedAdmin = await Admin.findById(verifiedToken.id);
+
+  if (loggedAdmin) {
     return true;
   }
+
   return false;
 };
 
 /**
  * This function is used to create a single document asynchronously.
  *
- * @param {Model} Model - A mongoose model
+ * @param {Model*} Model - Required: A mongoose model
+ * @param {Object} allowedFields - the fields that should be allowed / disallowed for user to create
+ * @param {Function} callback - the callback function that should be called when the item is created
  * @return void
  */
 exports.createOne = (
@@ -62,13 +95,17 @@ exports.createOne = (
   callback
 ) =>
   asyncHandler(async (req, res, next) => {
+    // 1) If allowed fields not setted, set default values
     if (Object.keys(allowedFields).length < 1) {
       allowedFields = allowedFields = { toAllow: true, user: [] };
     }
 
     let filteredBody = req.body;
+    const isAdmin = await checkIsAdminLoggedIn(req);
+
+    // 2) Filter the object with allowedFields if the user is not admin
     if (
-      !req.admin &&
+      !isAdmin &&
       Array.isArray(allowedFields.user) &&
       allowedFields.user.length > 0
     ) {
@@ -78,25 +115,38 @@ exports.createOne = (
         ...allowedFields.user
       );
     }
+
+    // 4) Create the model
     const doc = await Model.create(filteredBody);
 
+    // 5) Call the callback method if setted
     if (callback) {
       await callback(doc);
     }
 
+    // 6) return response
     res.status(201).json({
       status: 'success',
-      data: doc.toClient(isAdmin(req), getLang(req.headers)),
+      data: doc.toClient(isAdmin, getLang(req.headers)),
     });
   });
 
+/**
+ * This method is for searching and filtering a model
+ * @param {Request*} req
+ * @param {String*} searchText
+ * @param {Array*} searchFields
+ * @returns auery object
+ */
 const searchAndFilter = (req, searchText, searchFields) => {
+  // 1) Set the $or to the query, so we can filter fields
   let query = {};
   if (searchFields.length > 0) {
     query = {
       $or: [],
     };
 
+    // 2) Map search fields and set them in the query object with thes earched text
     searchFields.map((sf) => {
       const obj = {};
       obj[sf] = {
@@ -109,6 +159,7 @@ const searchAndFilter = (req, searchText, searchFields) => {
 
   const queries = req.query;
 
+  // 3) Now, we can filter with the queries params
   for (const key in queries) {
     if (key == 'limit' || key == 'page' || key == 'search') continue;
 
@@ -120,32 +171,37 @@ const searchAndFilter = (req, searchText, searchFields) => {
     query[key] = queries[key];
   }
 
+  // return the filtering query object
   return query;
 };
 
 /**
  * This function is used to get all documents in a model.
- *
  * @param {Model} Model - A mongoose model
+ * @param {Object} Model - Options object that contains: (searchFields - toPopulate - userFilters)
  * @return void
  */
 exports.getAll = (Model, options = {}) =>
   asyncHandler(async (req, res, next) => {
-    // Extract data from options
+    // 1) Extract data from options
     const {
       searchFields = [], // these fields for searching
 
       // Fields to populate
       toPopulate = [],
 
-      userFilters = {},
+      userFilters = {}, // Filters for users Only
     } = options;
 
+    // 2) Get pagination params from query
     const { page = 1, search = '', limit = 100 } = req.query;
 
+    // 3) Search and filter
     let query = searchAndFilter(req, search, searchFields);
 
-    if (!req.admin || req.admin === undefined) {
+    const isAdmin = await checkIsAdminLoggedIn(req);
+    // 4) Use userFilters if the user is not admin
+    if (!isAdmin) {
       for (const f in userFilters) {
         query[f] = userFilters[f];
       }
@@ -154,7 +210,7 @@ exports.getAll = (Model, options = {}) =>
     let count = 0;
     let docs;
 
-    // Get the populated docs
+    // 5) Get the populated docs
     docs = await handlePopulates(
       Model.find(query)
         .skip((parseInt(page) - 1) * limit)
@@ -162,12 +218,13 @@ exports.getAll = (Model, options = {}) =>
       toPopulate
     );
 
-    // Count the docs
+    // 6) Count the docs
     count = await Model.find(query).countDocuments();
 
+    // 7) Return response
     res.status(200).json({
       status: 'success',
-      data: docs.map((doc) => doc.toClient(isAdmin(req), getLang(req.headers))),
+      data: docs.map((doc) => doc.toClient(isAdmin, getLang(req.headers))),
       pagination: {
         totalPages: Math.ceil(count / limit),
         totalRecords: count,
@@ -179,7 +236,6 @@ exports.getAll = (Model, options = {}) =>
 
 /**
  * This function is used to get one document in a model.
- *
  * @param {Model} Model - A mongoose model
  * @return void
  */
@@ -189,6 +245,8 @@ exports.getOne = (Model, findBy = '', options = {}) =>
     const {
       // Fields to populate
       toPopulate = [],
+
+      userFilters = {}, // Filters for users Only
     } = options;
 
     const identifier = req.params.id;
@@ -196,9 +254,19 @@ exports.getOne = (Model, findBy = '', options = {}) =>
     if (findBy) {
       findByObj[findBy] = identifier;
     }
+
+    const isAdmin = await checkIsAdminLoggedIn(req);
+    // 4) Use userFilters if the user is not admin
+    if (!isAdmin) {
+      for (const f in userFilters) {
+        findByObj[f] = userFilters[f];
+      }
+    }
     // Get the populated docs
     const doc = await handlePopulates(
-      findBy ? Model.findOne(findByObj) : Model.findById(identifier),
+      findByObj && Object.keys(findByObj) > 0
+        ? Model.findOne(findByObj)
+        : Model.findById(identifier),
       toPopulate
     );
 
@@ -208,7 +276,7 @@ exports.getOne = (Model, findBy = '', options = {}) =>
 
     res.status(200).json({
       status: 'success',
-      data: doc.toClient(isAdmin(req), getLang(req.headers)),
+      data: doc.toClient(isAdmin, getLang(req.headers)),
     });
   });
 
@@ -229,8 +297,9 @@ exports.updateOne = (
     }
 
     let filteredBody = req.body;
+    const isAdmin = await checkIsAdminLoggedIn(req);
     if (
-      !req.admin &&
+      !isAdmin &&
       Array.isArray(allowedFields.user.length > 0) &&
       allowedFields.user.length > 0
     ) {
@@ -256,7 +325,7 @@ exports.updateOne = (
 
     res.status(200).json({
       status: 'success',
-      data: doc.toClient(isAdmin(req), getLang(req.headers)),
+      data: doc.toClient(isAdmin, getLang(req.headers)),
     });
   });
 
@@ -282,4 +351,41 @@ exports.deleteOne = (Model, callback) =>
       status: 'success',
       data: {},
     });
+  });
+
+exports.getHeaderLang = getLang;
+exports.isAdmin = checkIsAdminLoggedIn;
+exports.searchAndFilter = searchAndFilter;
+
+exports.getAllAggregate = (Model, aggregateOtions, project) =>
+  asyncHandler(async (req, res, next) => {
+    const { page = 1, search = '', limit = 100 } = req.query;
+    let aggregate_options = [];
+
+    //set the options for pagination
+    const options = {
+      page,
+      page,
+      limit: limit,
+      collation: { locale: 'en' },
+      customLabels: {
+        totalDocs: 'totalRecords',
+        docs: 'data',
+        meta: 'pagination',
+        page: 'currentPage',
+        limit: 'perPage',
+      },
+    };
+
+    let match = searchAndFilter(req, search, []);
+    aggregate_options.push({ $match: match });
+
+    aggregate_options.push(...aggregateOtions);
+
+    aggregate_options.push({ $project: project(getLang(req.headers)) });
+
+    // Set up the aggregation
+    const myAggregate = Model.aggregate(aggregate_options);
+    const result = await Model.aggregatePaginate(myAggregate, options);
+    return res.status(200).json({ status: 'success', ...result });
   });

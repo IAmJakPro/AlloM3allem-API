@@ -27,6 +27,7 @@ exports.getService = factory.getOne(Service);
  */
 exports.getAllServices = factory.getAll(Service, {
   searchFields: ['name.fr', 'name.ar'],
+  userFilters: { isActive: true },
 });
 
 /**

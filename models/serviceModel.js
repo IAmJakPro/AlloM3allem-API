@@ -40,15 +40,13 @@ serviceSchema.path('name.ar').set(function (v) {
   return v;
 });
 
-serviceSchema.pre('save', async function (next) {
+/* serviceSchema.pre('save', async function (next) {
   if (!this.isModified('image')) {
     return next();
   }
 
-  await deleteImage(`services/${this._id.toString()}`);
-
   next();
-});
+}); */
 
 serviceSchema.post('findOneAndDelete', async function (doc) {
   await deleteImage(`services/${doc._id.toString()}`);

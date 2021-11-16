@@ -49,7 +49,9 @@ exports.deleteReview = factory.deleteOne(Review);
 /**
  * Get the reviews I GOT
  */
-exports.getMyGottenReviews = factory.getAll(Review);
+exports.getMyGottenReviews = factory.getAll(Review, {
+  userFilters: { status: 'approved' },
+});
 
 /**
  * Get the reviews I GAVE

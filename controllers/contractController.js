@@ -62,7 +62,7 @@ exports.acceptContract = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: contract,
+    data: contract.toClient(),
   });
 });
 
@@ -104,7 +104,7 @@ exports.updateMyContract = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: contract,
+    data: contract.toClient(),
   });
 });
 

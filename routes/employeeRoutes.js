@@ -3,6 +3,7 @@ const express = require('express');
 
 // Middlewares
 const authMiddleware = require('../middlewares/authMiddleware');
+const userMiddleware = require('../middlewares/userMiddleware');
 const fileUploadMiddleware = require('../middlewares/fileUploadMiddleware');
 
 // Controllers
@@ -10,7 +11,11 @@ const employeeController = require('../controllers/employeeController');
 
 const router = express.Router();
 
-router.get('/', employeeController.getAllEmployees);
+// Get all active employees
+router.get(
+  '/',
+  employeeController.getAllEmployees
+);
 
 router.get('/username/:username', employeeController.getEmployeeByUsername);
 

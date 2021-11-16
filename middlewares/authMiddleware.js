@@ -186,9 +186,9 @@ exports.checkIsAdminLoggedIn = asyncHandler(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies && req.cookies.jwtAdmin) {
+  }/*  else if (req.cookies && req.cookies.jwtAdmin) {
     token = req.cookies.jwtAdmin;
-  } else {
+  } */ else {
     req.admin = undefined;
     return next();
   }
@@ -212,7 +212,7 @@ exports.checkIsAdminLoggedIn = asyncHandler(async (req, res, next) => {
 
   if (!loggedAdmin) {
     req.admin = undefined;
-    return next();s
+    return next();
   }
 
   // 4) Grant admin access to the route.

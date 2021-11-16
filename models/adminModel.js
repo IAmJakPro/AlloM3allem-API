@@ -37,7 +37,6 @@ adminSchema.pre('save', async function (next) {
 
   // Encrypt the password with BCRYPT Algorithm.
   this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = undefined;
   next();
 });
 

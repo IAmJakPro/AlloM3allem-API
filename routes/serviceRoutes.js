@@ -10,11 +10,7 @@ const serviceController = require('../controllers/serviceController');
 
 const router = express.Router();
 
-router.get(
-  '/',
-  authMiddleware.checkIsAdminLoggedIn,
-  serviceController.getAllServices
-);
+router.get('/', serviceController.getAllServices);
 
 // Routes below are restricted for admins
 router.use(authMiddleware.checkLoggedAdmin);

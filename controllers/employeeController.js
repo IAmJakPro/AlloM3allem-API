@@ -37,12 +37,21 @@ exports.getEmployee = factory.getOne(Employee);
  * Get a single employee by username
  */
 exports.getEmployeeByUsername = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({
+  const employee = await Employee.findOne().populate({
+    path: 'user',
+    match: {
+      username: req.params.username,
+      type: 'employee',
+      status: 'active',
+    },
+  });
+  /* const user = await User.findOne({
     username: req.params.username,
     type: 'employee',
     status: 'active',
-  });
-
+  }).populate('employee');
+ */
+  const user = employee.user;
   if (!user) {
     return next(
       new AppError('User with given username not found or not active!', 404)
@@ -51,18 +60,42 @@ exports.getEmployeeByUsername = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: user,
+    data: employee.toClient(false, factory.getHeaderLang(req.headers)),
   });
 });
 
 /**
  * Get all employees
  */
-exports.getAllEmployees = factory.getAll(Employee, {
-  userFilters: {
-    status: 'active',
-  },
-});
+exports.getAllEmployees = factory.getAllAggregate(
+  Employee,
+  [
+    {
+      $lookup: {
+        from: 'services',
+        localField: 'service',
+        foreignField: '_id',
+        as: 'service',
+      },
+    },
+    {
+      $unwind: '$service',
+    },
+
+    {
+      $lookup: {
+        from: 'cities',
+        localField: 'workIn',
+        foreignField: '_id',
+        as: 'workIn',
+      },
+    },
+  ],
+  (lang) => ({
+    workIn: lang === 'fr' ? '$workIn.name.fr' : '$workIn.name.ar',
+    name: '$user.name',
+  })
+);
 
 /**
  * Upload portfolio images
@@ -217,6 +250,6 @@ exports.updateMe = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: updatedUser,
+    data: updatedUser.toClient(false, factory.getHeaderLang(req.headers)),
   });
 });

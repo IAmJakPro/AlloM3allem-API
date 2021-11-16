@@ -9,11 +9,7 @@ const cityController = require('../controllers/cityController');
 
 const router = express.Router();
 
-router.get(
-  '/',
-  authMiddleware.checkIsAdminLoggedIn,
-  cityController.getAllCities
-);
+router.get('/', cityController.getAllCities);
 
 // Routes below are restricted for admins
 router.use(authMiddleware.checkLoggedAdmin);

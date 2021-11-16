@@ -7,6 +7,7 @@ const Client = require('./clientModel');
 const Notification = require('./notificationModel');
 const { customAlphabet } = require('nanoid');
 const slugify = require('slugify');
+const filterObj = require('../utils/filterObj');
 
 const Schema = mongoose.Schema;
 
@@ -32,7 +33,7 @@ const userSchema = new Schema(
       //required: true,
       unique: true,
     },
-    password: { type: String, required: true, minlength: 6 },
+    password: { type: String, required: true, minlength: 6, select: false },
     phone: {
       type: String,
       unique: true,
@@ -197,22 +198,68 @@ userSchema.methods.genResetTokenForLink = function () {
   return sucretToken;
 };
 
-userSchema.method('toClient', function (isAdmin) {
+userSchema.pre(/^find/, function (next) {
+  this.populate('city', 'name');
+  next();
+});
+
+userSchema.method('toClient', function (isAdmin, lang) {
   let obj = this.toObject({ getters: true });
-
-  if (!isAdmin) {
-    if (obj.type === 'employee' && obj.hasOwnProperty('employee')) {
-      obj = obj.employee;
-    } else if (obj.type === 'client' && obj.hasOwnProperty('client')) {
-      obj = obj.client;
+  if (lang) {
+    if (obj.city) {
+      obj.city = obj.city.name[lang];
     }
-    delete obj._id;
-
-    obj = { ...obj, ...obj.user };
-    delete obj.user;
+    if (obj.type === 'employee') {
+      if (obj.employee.workIn && obj.employee.workIn.length > 0) {
+        let newWorkIn = [];
+        for (const city of obj.employee.workIn) {
+          newWorkIn.push(city.name[lang]);
+        }
+        obj.employee.workIn = newWorkIn;
+      }
+      if (obj.employee.service) {
+        obj.employee.service = obj.employee.service.name[lang];
+      }
+    }
   }
 
-  delete obj._id;
+  if (!isAdmin) {
+    const filteredUser = filterObj(
+      obj,
+      false,
+      '_id',
+      'id',
+      'status',
+      'updatedAt',
+      'employee',
+      'client'
+    );
+    let filteredProfile = {};
+    if (obj.type === 'employee' && obj.employee) {
+      filteredProfile = filterObj(
+        obj.employee,
+        false,
+        'user',
+        'createdAt',
+        'updatedAt',
+        'id',
+        '_id'
+      );
+    }
+    if (obj.type === 'client' && obj.client) {
+      filteredProfile = filterObj(
+        obj.client,
+        false,
+        'user',
+        'createdAt',
+        'updatedAt',
+        'id',
+        '_id'
+      );
+    }
+    const clientObject = Object.assign(filteredUser, filteredProfile);
+    return clientObject;
+  }
 
   return obj;
 });

@@ -10,13 +10,14 @@ const adminController = require('../controllers/adminController');
 
 const router = express.Router();
 
-// Authentication for admins -- ability to login, logout.
+// Authentication for admins -- ability to login
 router.post('/login', adminAuthController.login);
 
 // Only logged in admins
 router.use(authMiddleware.checkLoggedAdmin);
 
 router.get('/logout', adminAuthController.logout);
+
 router.get('/', adminController.getAllAdmins);
 
 // Routes below are restricted for super admins

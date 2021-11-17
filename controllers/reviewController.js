@@ -55,6 +55,7 @@ exports.deleteReview = factory.deleteOne(Review);
  * Get the reviews I GOT
  */
 exports.getMyGottenReviews = factory.getAll(Review, {
+  searchFields: ['comment', 'status'],
   userFilters: { status: 'approved' },
 });
 

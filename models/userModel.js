@@ -271,6 +271,10 @@ userSchema.methods.isPasswordCorrect = async function (password, userPassword) {
 userSchema.index({
   name: 'text',
   username: 'text',
+  phone: 'text',
+  city: 'text',
+  type: 'text',
+  status: 'text',
 });
 
 module.exports = mongoose.model('User', userSchema);

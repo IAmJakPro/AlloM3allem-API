@@ -40,7 +40,9 @@ exports.getAppointment = factory.getOne(Appointment);
 /**
  * Get all Appointments
  */
-exports.getAllAppointments = factory.getAll(Appointment);
+exports.getAllAppointments = factory.getAll(Appointment, {
+  searchFields: ['address', 'description'],
+});
 
 /**
  * Delete a single Appointment

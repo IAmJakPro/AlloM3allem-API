@@ -73,7 +73,7 @@ contractSchema.pre('save', function (next) {
   next();
 }); */
 
-contractSchema.method('toClient', function () {
+contractSchema.method('toClient', function (isAdmin, lang) {
   const obj = this.toObject({ getters: true });
   if (obj.employee) {
     delete obj.employee.city;
@@ -85,6 +85,13 @@ contractSchema.method('toClient', function () {
     delete obj.client._id;
   }
 
+  if (obj.service) {
+    if (lang) {
+      obj.service = obj.service.name[lang];
+    }
+    delete obj.service._id;
+  }
+
   if (obj.appointment) {
     delete obj.appointment._id;
   }
@@ -92,6 +99,14 @@ contractSchema.method('toClient', function () {
   delete obj._id;
 
   return obj;
+});
+
+contractSchema.index({
+  price: 'text',
+  workType: 'text',
+  service: 'text',
+  summary: 'text',
+  status: 'text',
 });
 
 module.exports = mongoose.model('Contract', contractSchema);

@@ -29,7 +29,7 @@ exports.getReport = factory.getOne(Report);
  * Get all Reports
  */
 exports.getAllReports = factory.getAll(Report, {
-  searchFields: ['description'],
+  searchFields: ['email', 'type', 'description'],
 });
 
 /**

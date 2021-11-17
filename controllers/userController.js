@@ -37,7 +37,7 @@ exports.getUser = factory.getOne(User, '', {
  * Get all users
  */
 exports.getAllUsers = factory.getAll(User, {
-  searchFields: ['name'],
+  searchFields: ['name', 'username', 'phone', 'city', 'type', 'status'],
   toPopulate: ['employee', 'client'],
 });
 

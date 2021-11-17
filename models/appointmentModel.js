@@ -64,6 +64,9 @@ appointmentSchema.method('toClient', function () {
   return obj;
 });
 
-appointmentSchema.index({ name: 'text', email: 'text' });
+appointmentSchema.index({
+  address: 'text',
+  description: 'text',
+});
 
 module.exports = mongoose.model('Appointment', appointmentSchema);

@@ -33,4 +33,10 @@ reportSchema.method('toClient', function () {
   return obj;
 });
 
+reportSchema.index({
+  description: 'text',
+  type: 'text',
+  email: 'text',
+});
+
 module.exports = mongoose.model('Report', reportSchema);

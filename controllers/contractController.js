@@ -121,8 +121,8 @@ exports.updateMyContract = asyncHandler(async (req, res, next) => {
 exports.getMyContract = factory.getAll(Contract, {
   toPopulate: [
     { path: 'appointment', select: 'id' },
-    { path: 'employee', select: 'name username' },
-    { path: 'client', select: 'name username' },
+    { path: 'employee client', select: 'name username' },
+    { path: 'service', select: 'name' },
   ],
 });
 
@@ -134,12 +134,25 @@ exports.updateContract = factory.updateOne(Contract);
 /**
  * Get a single Contract
  */
-exports.getContract = factory.getOne(Contract);
+exports.getContract = factory.getOne(Contract, {
+  searchFields: ['price', 'workType', 'service', 'summary', 'status'],
+});
 
 /**
  * Get all categories
  */
-exports.getAllContracts = factory.getAll(Contract);
+exports.getAllContracts = factory.getAll(Contract, {
+  toPopulate: [
+    {
+      path: 'employee client',
+      select: 'username name id',
+    },
+    {
+      path: 'service',
+      select: 'name',
+    },
+  ],
+});
 
 /**
  * Delete a single Contract

@@ -21,4 +21,11 @@ contactSchema.method('toClient', function () {
   return obj;
 });
 
+contactSchema.index({
+  name: 'text',
+  subject: 'text',
+  email: 'text',
+  message: 'text',
+});
+
 module.exports = mongoose.model('Contact', contactSchema);

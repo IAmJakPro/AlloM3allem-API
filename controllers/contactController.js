@@ -23,7 +23,7 @@ exports.getContact = factory.getOne(Contact);
  * Get all categories
  */
 exports.getAllContacts = factory.getAll(Contact, {
-  searchFields: ['subject'],
+  searchFields: ['subject', 'message', 'name', 'email', 'message'],
 });
 
 /**

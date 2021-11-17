@@ -106,4 +106,9 @@ reviewSchema.method('toClient', function () {
   return obj;
 });
 
+reviewSchema.index({
+  comment: 'text',
+  status: 'text',
+});
+
 module.exports = mongoose.model('Review', reviewSchema);

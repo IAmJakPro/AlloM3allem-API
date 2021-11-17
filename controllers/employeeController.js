@@ -94,6 +94,13 @@ exports.getAllEmployees = factory.getAllAggregate(
   (lang) => ({
     workIn: lang === 'fr' ? '$workIn.name.fr' : '$workIn.name.ar',
     name: '$user.name',
+    city: lang === 'fr' ? '$user.city.name.fr' : '$user.city.name.ar',
+    username: '$user.username',
+    avgRating: '$user.avgRating',
+    ratingQty: '$user.ratingQty',
+    isAvailable: '$isAvailable',
+    image: '$user.image',
+    service: lang === 'fr' ? '$service.name.fr' : '$service.name.ar',
   })
 );
 

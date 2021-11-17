@@ -59,8 +59,8 @@ serviceSchema.method('toClient', function (isAdmin, lang) {
   }
 
   if (!isAdmin) {
-    const { id, name } = obj;
-    return { id, name };
+    const { id, name, image } = obj;
+    return { id, name, image };
   }
 
   //Rename fields

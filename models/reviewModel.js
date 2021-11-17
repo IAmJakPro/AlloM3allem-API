@@ -81,12 +81,25 @@ reviewSchema.post(/^findOneAnd/, async function () {
 });
 
 reviewSchema.pre(/^find/, function (next) {
-  this.populate('rater').populate('rated');
+  this.populate('rater', 'username id name image').populate(
+    'rated',
+    'username id name image'
+  );
   next();
 });
 
 reviewSchema.method('toClient', function () {
   let obj = this.toObject({ getters: true });
+
+  if (obj.rated) {
+    delete obj.rated.city;
+    delete obj.rated._id;
+  }
+
+  if (obj.rater) {
+    delete obj.rater.city;
+    delete obj.rater._id;
+  }
 
   delete obj._id;
 

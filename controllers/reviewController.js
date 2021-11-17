@@ -17,7 +17,12 @@ exports.createReview = factory.createOne(
   },
   async (doc) => {
     const user = await User.findById(doc.rated);
-    user.notify('review', { message: 'You got a new review' });
+    user.notify('review', {
+      message: {
+        fr: `Vous avez un nouvel avis de ${req.user.name}`,
+        ar: `لديك تقييم جديد من ${req.user.name}`,
+      },
+    });
   }
 );
 
@@ -57,3 +62,8 @@ exports.getMyGottenReviews = factory.getAll(Review, {
  * Get the reviews I GAVE
  */
 exports.getMyGivenReviews = factory.getAll(Review);
+
+/**
+ * Get reviews by user id
+ */
+exports.getUserReviews = factory.getAll(Review);

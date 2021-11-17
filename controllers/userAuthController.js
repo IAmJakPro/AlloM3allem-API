@@ -35,7 +35,10 @@ exports.signup = asyncHandler(async (req, res, next) => {
   });
 
   await newUser.notify('welcome', {
-    message: 'Welcome to our AlloM3allem',
+    message: {
+      fr: `Bienvenu ${name} sur AlloM3allem`,
+      ar: `مرحبًا بك ${name} في الومعلم`,
+    },
   });
 
   res.status(200).json({

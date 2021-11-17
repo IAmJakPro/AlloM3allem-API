@@ -7,6 +7,11 @@ const userMiddleware = require('../middlewares/userMiddleware');
 
 // Controllers
 const contractController = require('../controllers/contractController');
+const asyncHandler = require('../utils/asyncHandler');
+
+// Models
+const Appointment = require('../models/appointmentModel');
+const AppError = require('../utils/appError');
 
 const router = express.Router();
 
@@ -17,6 +22,16 @@ router.post(
   '/',
   authMiddleware.routeGuard('employee'),
   userMiddleware.getMeInBody,
+  asyncHandler(async (req, res, next) => {
+    if (req.body.appointment) {
+      const appointment = await Appointment.findById(req.body.appointment);
+      if (!appointment) {
+        return next(new AppError('This job request is not exists', 404));
+      }
+      req.body.client = appointment.client._id || appointment.client;
+    }
+    next();
+  }),
   contractController.createContract
 );
 

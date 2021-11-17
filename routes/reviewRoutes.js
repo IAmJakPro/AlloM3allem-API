@@ -7,13 +7,30 @@ const authMiddleware = require('../middlewares/authMiddleware');
 // Controllers
 const reviewController = require('../controllers/reviewController');
 
+// Models
+const User = require('../models/userModel');
+const AppError = require('../utils/appError');
+const asyncHandler = require('../utils/asyncHandler');
+
 const router = express.Router();
+
+router.get(
+  '/user/:id',
+  (req, res, next) => {
+    if (!req.query) {
+      req.query = {};
+    }
+    req.query['rated'] = req.params.id;
+    next();
+  },
+  reviewController.getUserReviews
+);
 
 // Routes below are restricted for logged in users
 router.use(authMiddleware.checkLoggedUser);
 
 router.get(
-  '/my-gotten-reviews',
+  '/gotten',
   (req, res, next) => {
     if (!req.query) {
       req.query = {};
@@ -25,7 +42,7 @@ router.get(
   reviewController.getMyGottenReviews
 );
 router.get(
-  '/my-given-reviews',
+  '/given',
   (req, res, next) => {
     if (!req.query) {
       req.query = {};
@@ -36,7 +53,22 @@ router.get(
   },
   reviewController.getMyGivenReviews
 );
-router.post('/', reviewController.createReview);
+router.post(
+  '/',
+  asyncHandler(async (req, res, next) => {
+    req.body.rater = req.user.id;
+    const rated = await User.findOne({ username: req.body.username });
+    if (!rated) {
+      return next(new AppError('Could not find this user', 404));
+    }
+    if (req.user.id == rated.id) {
+      return next(new AppError('Something went wrong', 500));
+    }
+    req.body.rated = rated.id;
+    next();
+  }),
+  reviewController.createReview
+);
 
 router.use(authMiddleware.checkLoggedAdmin);
 

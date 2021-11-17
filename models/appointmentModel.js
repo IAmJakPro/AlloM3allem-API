@@ -34,13 +34,30 @@ appointmentSchema.virtual('contract', {
   justOne: true,
 });
 
-appointmentSchema.pre(/^find/, function (next) {
-  this.populate('employee').populate('client');
+/* appointmentSchema.pre(/^find/, function (next) {
+  this.populate('employee', 'username name id').populate(
+    'client',
+    'username name id'
+  );
   next();
-});
+}); */
 
 appointmentSchema.method('toClient', function () {
   const obj = this.toObject({ getters: true });
+
+  if (obj.employee) {
+    delete obj.employee.city;
+    delete obj.employee._id;
+  }
+
+  if (obj.client) {
+    delete obj.client.city;
+    delete obj.client._id;
+  }
+
+  if (obj.contract) {
+    delete obj.contract._id;
+  }
 
   delete obj._id;
 

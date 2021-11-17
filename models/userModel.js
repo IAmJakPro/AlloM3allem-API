@@ -63,13 +63,13 @@ const userSchema = new Schema(
     avgRating: {
       type: Number,
       default: 0,
-      min: 1,
+      min: 0,
       max: 5,
       set: (val) => Math.round(val * 10) / 10,
     },
     ratingQty: {
       type: Number,
-      min: 1,
+      min: 0,
       max: 5,
       default: 0,
     },

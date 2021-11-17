@@ -12,7 +12,14 @@ const User = require('../models/userModel');
 /**
  * Create a single user
  */
-exports.createUser = factory.createOne(User);
+exports.createUser = factory.createOne(User, {}, async (user) => {
+  await user.notify('welcome', {
+    message: {
+      fr: `Bienvenu ${user.name} sur AlloM3allem`,
+      ar: `مرحبًا بك ${user.name} في الومعلم`,
+    },
+  });
+});
 
 /**
  * Update a single user

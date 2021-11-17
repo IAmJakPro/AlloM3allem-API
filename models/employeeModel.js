@@ -51,7 +51,7 @@ const employeeSchema = mongoose.Schema(
 
 employeeSchema.plugin(aggregatePaginate);
 
-employeeSchema.post('aggregate', softDeleteAggregateMiddleware);
+employeeSchema.pre('aggregate', softDeleteAggregateMiddleware);
 
 function softDeleteAggregateMiddleware(next) {
   // Get the current aggregation pipeline and prepend a `$match` that excludes
@@ -72,7 +72,8 @@ function softDeleteAggregateMiddleware(next) {
       $match: { 'user.status': 'active' },
     }
   );
-  //next();
+
+  next();
 }
 
 employeeSchema.pre(/^find/, async function (next) {
@@ -82,7 +83,7 @@ employeeSchema.pre(/^find/, async function (next) {
 
 employeeSchema.method('toClient', function (isAdmin, lang) {
   let obj = this.toObject({ getters: true });
-  /* 
+
   if (lang) {
     if (obj.workIn && obj.workIn.length > 0) {
       let newWorkIn = [];
@@ -104,7 +105,7 @@ employeeSchema.method('toClient', function (isAdmin, lang) {
   obj = Object.assign(
     filterObj(obj, false, 'id', '_id', 'user'),
     filterObj(obj.user, false, '_id', 'id', 'status')
-  ); */
+  );
 
   return obj;
 });

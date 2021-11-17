@@ -18,7 +18,12 @@ exports.createAppointment = factory.createOne(
   // Notify the employee
   asyncHandler(async (doc) => {
     const user = await User.findById(doc.employee);
-    await user.notify('appointment', { message: 'You got a new appointment' });
+    await user.notify('appointment', {
+      message: {
+        fr: `Vous avez reçu une nouvelle demande de service de ${req.user.name}`,
+        ar: `لقد تلقيت طلب خدمة جديدًا من ${req.user.name}`,
+      },
+    });
   })
 );
 
@@ -45,7 +50,13 @@ exports.deleteAppointment = factory.deleteOne(Appointment);
 /**
  * Get my appointments
  */
-exports.myAppointments = factory.getAll(Appointment);
+exports.myAppointments = factory.getAll(Appointment, {
+  toPopulate: [
+    { path: 'contract', select: 'id -appointment' },
+    { path: 'employee', select: 'name username' },
+    { path: 'client', select: 'name username' },
+  ],
+});
 /* asyncHandler(async (req, res, next) => {
   const appointments = await Appointment.findOne({
     $or: [{ employee: req.user.id }, { client: req.user.id }],

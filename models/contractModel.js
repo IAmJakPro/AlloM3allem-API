@@ -65,17 +65,29 @@ contractSchema.pre('save', function (next) {
   next();
 });
 
-contractSchema.pre(/^find/, function (next) {
+/* contractSchema.pre(/^find/, function (next) {
   this.populate('appointment', 'id')
     .populate('employee', 'id name')
     .populate('client', 'id name')
     .populate('service', 'name');
   next();
-});
+}); */
 
 contractSchema.method('toClient', function () {
   const obj = this.toObject({ getters: true });
+  if (obj.employee) {
+    delete obj.employee.city;
+    delete obj.employee._id;
+  }
 
+  if (obj.client) {
+    delete obj.client.city;
+    delete obj.client._id;
+  }
+
+  if (obj.appointment) {
+    delete obj.appointment._id;
+  }
   //Rename fields
   delete obj._id;
 

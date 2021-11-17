@@ -46,7 +46,11 @@ exports.getMyNotifications = asyncHandler(async (req, res, next) => {
  */
 exports.readNotifications = asyncHandler(async (req, res, next) => {
   await Notification.updateMany(
-    { notifiable: req.user._id, read_at: null },
+    { notifiable: req.user.id, read_at: null },
     { $set: { read_at: new Date() } }
   );
+  res.status(200).json({
+    status: 'success',
+    data: {},
+  });
 });

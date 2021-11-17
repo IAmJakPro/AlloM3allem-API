@@ -27,7 +27,10 @@ exports.createContract = factory.createOne(
     // Notify the client
     const user = await User.findById(appointment.client);
     await user.notify('contract', {
-      message: 'employee accepted your appointment and he created a contract',
+      message: {
+        fr: `${req.user.name} a accepté votre demande de service et il a créé un contrat`,
+        ar: `وافق ${req.user.name} على طلب الخدمة الخاص بك وقام بإنشاء عقد`,
+      },
       contract_id: doc._id,
       appointment_id: appointment._id,
     });
@@ -56,7 +59,10 @@ exports.acceptContract = asyncHandler(async (req, res, next) => {
 
   const user = await User.findById(contract.employee);
   await user.notify('contract', {
-    message: 'Client accepted your contract',
+    message: {
+      fr: `${req.user.name} a accepté votre contrat`,
+      ar: `لقد قام ${req.user.name} بقبول عقدك`,
+    },
     contract_id: contract._id,
   });
 
@@ -97,8 +103,12 @@ exports.updateMyContract = asyncHandler(async (req, res, next) => {
   }
 
   const user = await User.findById(contract.client);
+
   await user.notify('contract', {
-    message: 'Client updated your contract',
+    message: {
+      fr: `${req.user.name} a mis à jour votre contrat`,
+      ar: `قام ${req.user.name} بتحديث عقدك`,
+    },
     contract_id: contract._id,
   });
 
@@ -108,7 +118,13 @@ exports.updateMyContract = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getMyContract = factory.getAll(Contract);
+exports.getMyContract = factory.getAll(Contract, {
+  toPopulate: [
+    { path: 'appointment', select: 'id' },
+    { path: 'employee', select: 'name username' },
+    { path: 'client', select: 'name username' },
+  ],
+});
 
 /**
  * Update a single Contract

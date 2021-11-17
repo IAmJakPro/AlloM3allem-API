@@ -29,8 +29,14 @@ notificationSchema.virtual('read').get(function () {
   return false;
 });
 
-notificationSchema.method('toClient', function (lang) {
+notificationSchema.method('toClient', function (isAdmin, lang) {
   const obj = this.toObject({ getters: true });
+
+  if (lang) {
+    if (obj.data.message) {
+      obj.data.message = obj.data.message[lang];
+    }
+  }
 
   //Rename fields
   delete obj._id;

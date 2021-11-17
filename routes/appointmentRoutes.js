@@ -11,6 +11,10 @@ const userMiddleware = require('../middlewares/userMiddleware');
 // Controllers
 const appointmentController = require('../controllers/appointmentController');
 
+// Models
+const User = require('../models/userModel');
+const AppError = require('../utils/appError');
+
 const router = express.Router();
 
 router.use(authMiddleware.checkLoggedUser);
@@ -27,6 +31,17 @@ router.post(
   '/',
   authMiddleware.routeGuard('client'),
   userMiddleware.getMeInBody,
+  asyncHandler(async (req, res, next) => {
+    const user = await User.findOne({ username: req.body.username });
+    if (!user) {
+      return next(new AppError('Could not find this user', 404));
+    }
+    if (req.user.id == user.id) {
+      return next(new AppError('Something went wrong', 500));
+    }
+    req.body.employee = user.id;
+    next();
+  }),
   appointmentController.createAppointment
 );
 

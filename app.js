@@ -47,7 +47,7 @@ const app = express();
 // Apply this request on everything.
 //app.options('*', cors({ origin: process.env.CLIENT_SIDE_ADMIN_URL }));
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors());
 app.options('*', cors());
 
 // Trust Proxies

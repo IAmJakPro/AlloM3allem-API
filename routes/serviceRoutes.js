@@ -10,9 +10,12 @@ const serviceController = require('../controllers/serviceController');
 
 const router = express.Router();
 
+//////////////// Public routes ////////////////
+
 router.get('/', serviceController.getAllServices);
 
-// Routes below are restricted for admins
+//////////////// Admin routes ////////////////
+
 router.use(authMiddleware.checkLoggedAdmin);
 
 router.post(

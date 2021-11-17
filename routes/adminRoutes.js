@@ -13,14 +13,15 @@ const router = express.Router();
 // Authentication for admins -- ability to login
 router.post('/login', adminAuthController.login);
 
-// Only logged in admins
+//////////////// Logged In Admin Routes ////////////////
+
 router.use(authMiddleware.checkLoggedAdmin);
 
 router.get('/logout', adminAuthController.logout);
 
 router.get('/', adminController.getAllAdmins);
 
-// Routes below are restricted for super admins
+// Super admins only routes
 router.use(authMiddleware.routeGuard('super_admin'));
 
 router.post('/', adminController.createAdmin);

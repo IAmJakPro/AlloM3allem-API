@@ -1,3 +1,10 @@
+/**
+ * This function is used to filter an object
+ * @param {Object} obj - Object to filter
+ * @param {Boolean} toAllow  - allowedFields should be allowed or not allowed
+ * @param  {...any} allowedFields - allowed fields
+ * @returns
+ */
 const filterObj = (obj, toAllow = true, ...allowedFields) => {
   if (allowedFields.length < 1) {
     return obj;

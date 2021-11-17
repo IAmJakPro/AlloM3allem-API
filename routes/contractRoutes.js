@@ -5,19 +5,27 @@ const express = require('express');
 const authMiddleware = require('../middlewares/authMiddleware');
 const userMiddleware = require('../middlewares/userMiddleware');
 
+// Utils
+const AppError = require('../utils/appError');
+
 // Controllers
 const contractController = require('../controllers/contractController');
 const asyncHandler = require('../utils/asyncHandler');
 
 // Models
 const Appointment = require('../models/appointmentModel');
-const AppError = require('../utils/appError');
 
 const router = express.Router();
 
+//////////////// User routes ////////////////
+
 router.use(authMiddleware.checkLoggedUser);
 
-// To accept the appointment, Employee should create a contract and the appointment related to this contracr will automatically set as accepted
+// Employees only routes
+
+/**
+ * To accept the appointment, Employee should create a contract and the appointment related to this contracr will automatically set as accepted
+ */
 router.post(
   '/',
   authMiddleware.routeGuard('employee'),
@@ -35,30 +43,35 @@ router.post(
   contractController.createContract
 );
 
-// Employee Updates the contract if client requested changes
-router.patch(
-  '/update/:id',
-  authMiddleware.routeGuard('employee'),
-  contractController.updateMyContract
-);
-
-// Client accepts the contract
-router.patch(
-  '/accept/:id',
-  authMiddleware.routeGuard('client'),
-  contractController.acceptContract
-);
-
 router.get(
   '/my-contracts',
   userMiddleware.getMeInQuery,
   contractController.getMyContract
 );
 
+/**
+ * Employee Updates the contract if client requested changes
+ */
+router.patch(
+  '/update/:id',
+  authMiddleware.routeGuard('employee'),
+  contractController.updateMyContract
+);
+
+// Clients only routes
+router.patch(
+  '/accept/:id',
+  authMiddleware.routeGuard('client'),
+  contractController.acceptContract
+);
+
 router.use(authMiddleware.checkLoggedAdmin);
+
+//////////////// Admin routes ////////////////
 
 router.get('/', contractController.getAllContracts);
 
+/// Below routes will be used as needed, they're not used yet
 router
   .route('/:id')
   .patch(contractController.updateContract)

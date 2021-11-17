@@ -1,5 +1,8 @@
+// Third-party libraries
 const mongoose = require('mongoose');
 const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
+
+// Utils
 const filterObj = require('../utils/filterObj');
 
 const employeeSchema = mongoose.Schema(
@@ -49,11 +52,12 @@ const employeeSchema = mongoose.Schema(
   }
 );
 
+// This plugin is for pagination in aggregate
 employeeSchema.plugin(aggregatePaginate);
 
-employeeSchema.pre('aggregate', softDeleteAggregateMiddleware);
+employeeSchema.pre('aggregate', onlyActiveUsers);
 
-function softDeleteAggregateMiddleware(next) {
+function onlyActiveUsers(next) {
   // Get the current aggregation pipeline and prepend a `$match` that excludes
   // all soft-deleted docs
   this.pipeline().unshift(

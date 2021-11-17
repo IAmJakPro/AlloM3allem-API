@@ -9,13 +9,16 @@ const contactController = require('../controllers/contactController');
 
 const router = express.Router();
 
+//////////////// Public routes ////////////////
+
 router.post('/', contactController.createContact);
 
-// Routes below are restricted for super admins
+//////////////// Admin routes ////////////////
 router.use(authMiddleware.checkLoggedAdmin);
 
 router.route('/').get(contactController.getAllContacts);
 
+/// Below routes will be used as needed, they're not used yet
 router
   .route('/:id')
   .get(contactController.getContact)

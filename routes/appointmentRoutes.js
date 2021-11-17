@@ -17,16 +17,17 @@ const AppError = require('../utils/appError');
 
 const router = express.Router();
 
+//////////////// Users routes ////////////////
+
 router.use(authMiddleware.checkLoggedUser);
 
-// Retrieve appointments for both client and employee
 router.get(
   '/my-appointments',
   userMiddleware.getMeInQuery,
   appointmentController.myAppointments
 );
 
-// Client creates an appointment
+// Client only routes
 router.post(
   '/',
   authMiddleware.routeGuard('client'),
@@ -44,6 +45,8 @@ router.post(
   }),
   appointmentController.createAppointment
 );
+
+//////////////// Admin routes ////////////////
 
 router.use(authMiddleware.checkLoggedAdmin);
 

@@ -2,6 +2,7 @@
  * Note: Every function here naturally returns the asyncHandler and its insides.
  * Arrow function naturally returns everything if declared without curly brackets.
  */
+
 // Third party libraries
 const jwt = require('jsonwebtoken');
 
@@ -85,7 +86,7 @@ const checkIsAdminLoggedIn = async (req) => {
  * This function is used to create a single document asynchronously.
  *
  * @param {Model*} Model - Required: A mongoose model
- * @param {Object} allowedFields - the fields that should be allowed / disallowed for user to create
+ * @param {Object} allowedFields - the fields that should be allowed / disallowed for user to create (ONLY USERS, NOT ADMINS)
  * @param {Function} callback - the callback function that should be called when the item is created
  * @return void
  */
@@ -237,11 +238,15 @@ exports.getAll = (Model, options = {}) =>
 /**
  * This function is used to get one document in a model.
  * @param {Model} Model - A mongoose model
+ * @param {String} findBy - Find by username, name....,or id
+ * @param {Object} options - Obtions (toPopulate - userFilters)
+ * userFilters is used to filter the document before returning it
+ * Most of times it will be a check if the doc's status is active
  * @return void
  */
 exports.getOne = (Model, findBy = '', options = {}) =>
   asyncHandler(async (req, res, next) => {
-    // Extract data from options
+    //1) Extract data from options
     const {
       // Fields to populate
       toPopulate = [],
@@ -249,20 +254,22 @@ exports.getOne = (Model, findBy = '', options = {}) =>
       userFilters = {}, // Filters for users Only
     } = options;
 
+    // 2) get the identifier if findBy is setted, otherwise keep it as default which is 'id'
     const identifier = req.params.id;
     const findByObj = {};
     if (findBy) {
       findByObj[findBy] = identifier;
     }
 
+    // 3) Check if admin is logged in to see if we will use userFilters or not
     const isAdmin = await checkIsAdminLoggedIn(req);
-    // 4) Use userFilters if the user is not admin
+    // Use userFilters if the user is not admin
     if (!isAdmin) {
       for (const f in userFilters) {
         findByObj[f] = userFilters[f];
       }
     }
-    // Get the populated docs
+    // 4) Get the populated docs
     const doc = await handlePopulates(
       findByObj && Object.keys(findByObj) > 0
         ? Model.findOne(findByObj)
@@ -270,10 +277,12 @@ exports.getOne = (Model, findBy = '', options = {}) =>
       toPopulate
     );
 
+    // 5) Throw error if the doc is not found
     if (!doc) {
       return next(new AppError('No documents found with that ID!', 404));
     }
 
+    // 6) Return json response
     res.status(200).json({
       status: 'success',
       data: doc.toClient(isAdmin, getLang(req.headers)),
@@ -281,9 +290,11 @@ exports.getOne = (Model, findBy = '', options = {}) =>
   });
 
 /**
- * This function is used to update a document in a model.
+ * This function is used to update a single document asynchronously.
  *
- * @param {Model} Model - A mongoose model
+ * @param {Model*} Model - Required: A mongoose model
+ * @param {Object} allowedFields - the fields that should be allowed / disallowed for user to update (ONLY USERS, NOT ADMINS)
+ * @param {Function} callback - the callback function that should be called when the item is updated
  * @return void
  */
 exports.updateOne = (
@@ -296,6 +307,7 @@ exports.updateOne = (
       allowedFields = { toAllow: true, user: [] };
     }
 
+    // 1) Filter reuest body if the admin is not logged in and if allowedFields is setted
     let filteredBody = req.body;
     const isAdmin = await checkIsAdminLoggedIn(req);
     if (
@@ -310,19 +322,23 @@ exports.updateOne = (
       );
     }
 
+    // 2) Find and update the doc
     const doc = await Model.findByIdAndUpdate(req.params.id, filteredBody, {
       new: true,
       runValidators: true,
     });
 
+    // 3) Throw error if document to update is not found
     if (!doc) {
       return next(new AppError('No documents found with that ID!', 404));
     }
 
+    // 4) Call the callback method if it's setted
     if (callback) {
       callback(doc);
     }
 
+    // 5) Return the json reponse
     res.status(200).json({
       status: 'success',
       data: doc.toClient(isAdmin, getLang(req.headers)),
@@ -333,32 +349,41 @@ exports.updateOne = (
  * This function is used to delete a document in a model.
  *
  * @param {Model} Model - A mongoose model
+ * @param {Function} callback - A callback method to be applied on the deeted doc
  * @return void
  */
 exports.deleteOne = (Model, callback) =>
   asyncHandler(async (req, res, next) => {
+    // 1) Find the document to delete
     const doc = await Model.findOneAndDelete({ _id: req.params.id });
 
+    // 2) Throw erro if the doc is not found
     if (!doc) {
       return next(new AppError('No documents found with that ID!', 404));
     }
 
+    // 3) Call the callback function if it's setted
     if (callback) {
       await callback(doc);
     }
 
+    // 4) Return the json response
     res.status(200).json({
       status: 'success',
       data: {},
     });
   });
 
-exports.getHeaderLang = getLang;
-exports.isAdmin = checkIsAdminLoggedIn;
-exports.searchAndFilter = searchAndFilter;
-
+/**
+ *
+ * @param {Model} Model - A mongoose model
+ * @param {Object} aggregateOtions - Aggregation options to be added to default once
+ * @param {Object} project - Project in aggregate is the format that you want to return the document with as an object
+ * @returns
+ */
 exports.getAllAggregate = (Model, aggregateOtions, project) =>
   asyncHandler(async (req, res, next) => {
+    // 1) Extract request queries
     const { page = 1, search = '', limit = 100 } = req.query;
     let aggregate_options = [];
 
@@ -377,15 +402,27 @@ exports.getAllAggregate = (Model, aggregateOtions, project) =>
       },
     };
 
+    // 2) Search and filter request with received queries from request
     let match = searchAndFilter(req, search, []);
+
+    // 3) Add match - aggregate options - project to aggregate_options variable
     aggregate_options.push({ $match: match });
 
     aggregate_options.push(...aggregateOtions);
 
     aggregate_options.push({ $project: project(getLang(req.headers)) });
 
-    // Set up the aggregation
+    // 4) Set up the aggregation
     const myAggregate = Model.aggregate(aggregate_options);
+
+    // 5) Paginate and execute aggregation
     const result = await Model.aggregatePaginate(myAggregate, options);
+
+    // 6) Return the json response
     return res.status(200).json({ status: 'success', ...result });
   });
+
+// We export these functions because we MIGHT need them outside the factory
+exports.getHeaderLang = getLang;
+exports.isAdmin = checkIsAdminLoggedIn;
+exports.searchAndFilter = searchAndFilter;

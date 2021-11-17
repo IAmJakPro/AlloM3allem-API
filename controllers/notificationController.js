@@ -6,31 +6,6 @@ const asyncHandler = require('../utils/asyncHandler');
 const Notification = require('../models/notificationModel');
 
 /**
- * Create a single notification
- */
-exports.createNotification = factory.createOne(Notification);
-
-/**
- * Update a single notification
- */
-exports.updateNotification = factory.updateOne(Notification);
-
-/**
- * Get a single notification
- */
-exports.getNotification = factory.getOne(Notification);
-
-/**
- * Get all notifications
- */
-exports.getAllNotifications = factory.getAll(Notification);
-
-/**
- * Delete a single notification
- */
-exports.deleteNotification = factory.deleteOne(Notification);
-
-/**
  * Get my notifications
  */
 exports.getMyNotifications = asyncHandler(async (req, res, next) => {
@@ -54,3 +29,32 @@ exports.readNotifications = asyncHandler(async (req, res, next) => {
     data: {},
   });
 });
+
+//////////////////////////////////////////////
+////////////// Only admins ///////////////////
+//////////////////////////////////////////////
+
+/**
+ * Create a single notification
+ */
+exports.createNotification = factory.createOne(Notification);
+
+/**
+ * Update a single notification
+ */
+exports.updateNotification = factory.updateOne(Notification);
+
+/**
+ * Get a single notification
+ */
+exports.getNotification = factory.getOne(Notification);
+
+/**
+ * Get all notifications
+ */
+exports.getAllNotifications = factory.getAll(Notification);
+
+/**
+ * Delete a single notification
+ */
+exports.deleteNotification = factory.deleteOne(Notification);

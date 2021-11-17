@@ -1,3 +1,4 @@
+// Third-party libraries
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 
@@ -27,8 +28,6 @@ const adminSchema = new Schema(
   { timestamps: true }
 );
 
-// Document middleware, only works on save() and create()!
-// Doesn't work on update() and insert()!
 adminSchema.pre('save', async function (next) {
   // Only run the encryption if the password is modified.
   if (!this.isModified('password')) {

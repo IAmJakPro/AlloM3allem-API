@@ -1,3 +1,8 @@
+/**
+ * This array prototype is for removing item in array
+ * It will be extracted later
+ * @returns Array
+ */
 Array.prototype.remove = function () {
   var what,
     a = arguments,
@@ -21,17 +26,6 @@ const filterObj = require('../utils/filterObj');
 
 // Models
 const Employee = require('../models/employeeModel');
-const User = require('../models/userModel');
-
-/**
- * Update a single employee
- */
-exports.updateEmployee = factory.updateOne(Employee);
-
-/**
- * Get single employee
- */
-exports.getEmployee = factory.getOne(Employee);
 
 /**
  * Get a single employee by username
@@ -66,6 +60,8 @@ exports.getEmployeeByUsername = asyncHandler(async (req, res, next) => {
 
 /**
  * Get all employees
+ * We are using aggregate here because we want to get only employees that it's related user'status is active
+ * And the populate will not achieve what we want
  */
 exports.getAllEmployees = factory.getAllAggregate(
   Employee,
@@ -242,10 +238,10 @@ exports.deletePortfolio = asyncHandler(async (req, res, next) => {
 
 /**
  * Update me
+ * This function is not used anymore
+ * It may be removed
  */
 exports.updateMe = asyncHandler(async (req, res, next) => {
-  // 2) If not, simply update the User document.
-  // We'll only get the 'firstName', 'lastName', 'address', and 'email'.
   // Filter out unwanted field names first, that are not allowed to be updated.
   const filteredBody = filterObj(req.body, false, 'portfolio');
 
@@ -260,3 +256,17 @@ exports.updateMe = asyncHandler(async (req, res, next) => {
     data: updatedUser.toClient(false, factory.getHeaderLang(req.headers)),
   });
 });
+
+//////////////////////////////////////////////
+////////////// Only admins ///////////////////
+//////////////////////////////////////////////
+
+/**
+ * Update a single employee
+ */
+exports.updateEmployee = factory.updateOne(Employee);
+
+/**
+ * Get single employee
+ */
+exports.getEmployee = factory.getOne(Employee);

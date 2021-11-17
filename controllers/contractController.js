@@ -57,6 +57,7 @@ exports.acceptContract = asyncHandler(async (req, res, next) => {
     );
   }
 
+  // Notify employee
   const user = await User.findById(contract.employee);
   await user.notify('contract', {
     message: {
@@ -104,6 +105,7 @@ exports.updateMyContract = asyncHandler(async (req, res, next) => {
 
   const user = await User.findById(contract.client);
 
+  // Notify client
   await user.notify('contract', {
     message: {
       fr: `${req.user.name} a mis à jour votre contrat`,
@@ -126,6 +128,9 @@ exports.getMyContract = factory.getAll(Contract, {
   ],
 });
 
+//////////////////////////////////////////////
+////////////// Only admins ///////////////////
+//////////////////////////////////////////////
 /**
  * Update a single Contract
  */

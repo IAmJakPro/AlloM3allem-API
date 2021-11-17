@@ -9,9 +9,11 @@ const cityController = require('../controllers/cityController');
 
 const router = express.Router();
 
+//////////////// Public routes ////////////////
+
 router.get('/', cityController.getAllCities);
 
-// Routes below are restricted for admins
+//////////////// Admin routes ////////////////
 router.use(authMiddleware.checkLoggedAdmin);
 
 router.post('/', cityController.createCity);

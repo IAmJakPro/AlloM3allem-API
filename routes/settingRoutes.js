@@ -10,6 +10,8 @@ const settingController = require('../controllers/settingController');
 
 const router = express.Router();
 
+//////////////// Admin routes ////////////////
+
 router.use(authMiddleware.checkLoggedAdmin);
 
 router

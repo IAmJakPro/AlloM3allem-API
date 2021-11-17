@@ -1,3 +1,4 @@
+// Third-party libraries
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;

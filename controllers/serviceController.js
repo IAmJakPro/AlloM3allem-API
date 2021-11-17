@@ -5,8 +5,18 @@ const { uploadImage, deleteImage } = require('../utils/uploadHelper');
 
 // Models
 const Service = require('../models/serviceModel');
-const { default: slugify } = require('slugify');
 
+/**
+ * Get all cities
+ */
+exports.getAllServices = factory.getAll(Service, {
+  searchFields: ['name.fr', 'name.ar'],
+  userFilters: { isActive: true },
+});
+
+//////////////////////////////////////////////
+////////////// Only admins ///////////////////
+//////////////////////////////////////////////
 /**
  * Create a single Service
  */
@@ -21,14 +31,6 @@ exports.updateService = factory.updateOne(Service);
  * Get a single Service
  */
 exports.getService = factory.getOne(Service);
-
-/**
- * Get all cities
- */
-exports.getAllServices = factory.getAll(Service, {
-  searchFields: ['name.fr', 'name.ar'],
-  userFilters: { isActive: true },
-});
 
 /**
  * Delete a single Service

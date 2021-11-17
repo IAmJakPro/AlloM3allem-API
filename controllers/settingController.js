@@ -6,6 +6,10 @@ const { uploadImage } = require('../utils/uploadHelper');
 // Models
 const Setting = require('../models/settingModel');
 
+//////////////////////////////////////////////
+////////////// Only admins (of course) ///////////////////
+//////////////////////////////////////////////
+
 /**
  * Get settings
  */

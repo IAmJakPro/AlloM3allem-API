@@ -10,10 +10,17 @@ const notificationController = require('../controllers/notificationController');
 
 const router = express.Router();
 
+//////////////// User routes ////////////////
+
 router.use(authMiddleware.checkLoggedUser);
 
 router.get(
   '/my-notifications',
+
+  /**
+   * This is a simple middleware to get the logged in user as notifiable in query params,
+   * so we can get only notifications of the logged in user
+   */
   (req, res, next) => {
     if (!req.query) {
       req.query = {};
@@ -21,14 +28,17 @@ router.get(
     req.query['notifiable'] = req.user.id;
     next();
   },
+
   notificationController.getAllNotifications
 );
 
 router.patch('/read', notificationController.readNotifications);
 
-// Routes below are restricted for admins
+//////////////// Admin routes ////////////////
+
 router.use(authMiddleware.checkLoggedAdmin);
 
+/// Below routes will be used as needed, they're not used yet
 router
   .route('/')
   .get(notificationController.getAllNotifications)

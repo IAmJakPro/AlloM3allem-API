@@ -5,6 +5,17 @@ const factory = require('../utils/factory');
 const City = require('../models/cityModel');
 
 /**
+ * Get all cities
+ */
+exports.getAllCities = factory.getAll(City, {
+  searchFields: ['name.fr', 'name.ar'],
+  userFilters: { isActive: true },
+});
+
+//////////////////////////////////////////////
+////////////// Only admins ///////////////////
+//////////////////////////////////////////////
+/**
  * Create a single city
  */
 exports.createCity = factory.createOne(City);
@@ -18,14 +29,6 @@ exports.updateCity = factory.updateOne(City);
  * Get a single city
  */
 exports.getCity = factory.getOne(City);
-
-/**
- * Get all cities
- */
-exports.getAllCities = factory.getAll(City, {
-  searchFields: ['name.fr', 'name.ar'],
-  userFilters: { isActive: true },
-});
 
 /**
  * Delete a single city

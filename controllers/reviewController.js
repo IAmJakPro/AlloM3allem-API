@@ -15,7 +15,8 @@ exports.createReview = factory.createOne(
     toAllow: false,
     user: ['status'],
   },
-  async (doc) => {
+  // Notify the rated user
+  asyncHandler(async (doc) => {
     const user = await User.findById(doc.rated);
     user.notify('review', {
       message: {
@@ -23,8 +24,30 @@ exports.createReview = factory.createOne(
         ar: `لديك تقييم جديد من ${req.user.name}`,
       },
     });
-  }
+  })
 );
+
+/**
+ * Get the reviews I GOT
+ */
+exports.getMyGottenReviews = factory.getAll(Review, {
+  searchFields: ['comment', 'status'],
+  userFilters: { status: 'approved' },
+});
+
+/**
+ * Get the reviews I GAVE
+ */
+exports.getMyGivenReviews = factory.getAll(Review);
+
+/**
+ * Get reviews by user id
+ */
+exports.getUserReviews = factory.getAll(Review);
+
+//////////////////////////////////////////////
+////////////// Only admins ///////////////////
+//////////////////////////////////////////////
 
 /**
  * Update a single Review
@@ -50,21 +73,3 @@ exports.getAllReviews = factory.getAll(Review, {
  * Delete a single Review
  */
 exports.deleteReview = factory.deleteOne(Review);
-
-/**
- * Get the reviews I GOT
- */
-exports.getMyGottenReviews = factory.getAll(Review, {
-  searchFields: ['comment', 'status'],
-  userFilters: { status: 'approved' },
-});
-
-/**
- * Get the reviews I GAVE
- */
-exports.getMyGivenReviews = factory.getAll(Review);
-
-/**
- * Get reviews by user id
- */
-exports.getUserReviews = factory.getAll(Review);

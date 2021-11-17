@@ -1,3 +1,4 @@
+// Third-party libraries
 const mongoose = require('mongoose');
 
 const pageSchema = mongoose.Schema({
@@ -32,6 +33,7 @@ const pageSchema = mongoose.Schema({
   },
 });
 
+// Set the slufg of image
 pageSchema.path('title.fr').set(function (v) {
   this.slug = slugify(v, {
     lower: true,

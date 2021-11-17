@@ -1,6 +1,9 @@
+// Third-party libraries
 const mongoose = require('mongoose');
-const keySlugify = require('../utils/slugifyKey');
 const slugify = require('slugify');
+
+// Utils
+const keySlugify = require('../utils/slugifyKey');
 
 const Schema = mongoose.Schema;
 
@@ -23,6 +26,7 @@ const citySchema = new Schema(
   { timestamps: true }
 );
 
+// Set the keys and _id with slugified name
 citySchema.path('name.fr').set(function (v) {
   this._id = slugify(v, {
     replacement: '_',

@@ -1,8 +1,15 @@
+/**
+ * This is an upload helper is for upload images to Google cloud storage
+ */
+
+// Thirs-party libraries
 const util = require('util');
 const uuid = require('uuid').v4;
-const gc = require('../config/gc_storage');
-const bucket = gc.bucket(process.env.BUCKET_NAME);
 
+// Utils
+const gc = require('../config/gc_storage');
+
+const bucket = gc.bucket(process.env.BUCKET_NAME);
 const { format } = util;
 
 /**
@@ -41,6 +48,11 @@ const uploadImage = (file, bucketFolder) =>
       .end(buffer);
   });
 
+/**
+ * Delete an image/file from Gogole cloud storage
+ * @param {string} fileName - file name to be deleted
+ * @returns
+ */
 const deleteImage = async (fileName) => {
   const blob = bucket.file(fileName);
   return blob

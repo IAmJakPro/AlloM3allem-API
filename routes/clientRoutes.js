@@ -1,3 +1,8 @@
+/**
+ * NOTE: Client routes are not implemented yets
+ * This wil be implemented as needed
+ */
+
 // Third party libraries
 const express = require('express');
 

@@ -13,7 +13,9 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-// Authentication for users -- ability to logout, register, login, and account activation.
+//////////////// Public routes ////////////////
+
+// Authentication for users -- ability to logout, register, login, reset pass, and account activation.
 router.post('/register', userAuthController.signup);
 router.post('/login', userAuthController.login);
 
@@ -24,6 +26,8 @@ router.post('/verification/number', authController.verifTokenRestPass);
 router.patch('/resetpassword/:token', authController.resetPassword);
 
 router.use(authMiddleware.checkLoggedUser);
+
+//////////////// User routes ////////////////
 
 router.get('/logout', userAuthController.logout);
 
@@ -37,7 +41,8 @@ router.patch(
 );
 router.patch('/update-password', userController.updatePassword);
 
-// Routes below are restricted for super admins
+//////////////// Admin routes ////////////////
+
 router.use(authMiddleware.checkLoggedAdmin);
 
 router

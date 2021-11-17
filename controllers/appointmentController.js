@@ -15,6 +15,7 @@ exports.createAppointment = factory.createOne(
     toAllow: false,
     user: ['status'],
   },
+
   // Notify the employee
   asyncHandler(async (doc) => {
     const user = await User.findById(doc.employee);
@@ -26,28 +27,6 @@ exports.createAppointment = factory.createOne(
     });
   })
 );
-
-/**
- * Update a single Appointment
- */
-exports.updateAppointment = factory.updateOne(Appointment);
-
-/**
- * Get a single Appointment
- */
-exports.getAppointment = factory.getOne(Appointment);
-
-/**
- * Get all Appointments
- */
-exports.getAllAppointments = factory.getAll(Appointment, {
-  searchFields: ['address', 'description'],
-});
-
-/**
- * Delete a single Appointment
- */
-exports.deleteAppointment = factory.deleteOne(Appointment);
 
 /**
  * Get my appointments
@@ -69,3 +48,28 @@ exports.myAppointments = factory.getAll(Appointment, {
     data: appointments,
   });
 }); */
+
+//////////////////////////////////////////////
+////////////// Only admins ///////////////////
+//////////////////////////////////////////////
+/**
+ * Update a single Appointment
+ */
+exports.updateAppointment = factory.updateOne(Appointment);
+
+/**
+ * Get a single Appointment
+ */
+exports.getAppointment = factory.getOne(Appointment);
+
+/**
+ * Get all Appointments
+ */
+exports.getAllAppointments = factory.getAll(Appointment, {
+  searchFields: ['address', 'description'],
+});
+
+/**
+ * Delete a single Appointment
+ */
+exports.deleteAppointment = factory.deleteOne(Appointment);

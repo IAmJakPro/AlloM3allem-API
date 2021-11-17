@@ -15,6 +15,8 @@ const User = require('../models/userModel');
  * This function is used to sign the JWT to check whether the token is valid or not.
  *
  * @param {id} id - ID of the user.
+ * @param {string} type - Type of the user (admin - user).
+ * @param {string} role - Role of the user (client - employee - admin - super_admin).
  */
 const signToken = (id, type, role) =>
   jwt.sign({ id, type, role }, process.env.JWT_SECRET, {
@@ -62,6 +64,8 @@ exports.createAndSendToken = (cookieKey, user, statusCode, req, res) => {
   });
 };
 
+///////////////////// Below routes just gotten from HAMZA, they're not tested yet ///////////////////////////
+
 // send phone  verivication
 exports.sendResetPassToken = asyncHandler(async (req, res, next) => {
   const { phone } = req.body;
@@ -97,6 +101,9 @@ exports.sendResetPassToken = asyncHandler(async (req, res, next) => {
   }
 });
 
+/**
+ * Verify token pass
+ */
 exports.verifTokenRestPass = asyncHandler(async (req, res, next) => {
   const numberHashed = crypto
     .createHash('sha256')

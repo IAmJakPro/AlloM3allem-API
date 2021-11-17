@@ -1,3 +1,4 @@
+// Third-party libraries
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
@@ -23,6 +24,7 @@ const notificationSchema = new Schema(
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
+// Virtuals to check if the notification is read or not
 notificationSchema.virtual('read').get(function () {
   const currentDate = new Date();
   if (this.read_at !== null && currentDate >= this.read_at) return true;

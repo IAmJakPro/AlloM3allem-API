@@ -150,7 +150,7 @@ exports.routeGuard =
     if (req.method === 'OPTIONS') {
       return next();
     }
-    // Roles in an array: ['user', 'admin', 'owner']. Default role = ['user'].
+    // Roles in an array: ['user', 'admin', 'client', 'employee'].
     if (req.admin) {
       console.log(req.admin);
       if (!roles.includes(req.admin.role)) {
@@ -172,6 +172,8 @@ exports.routeGuard =
 
 /**
  * Check if admin is logged in, to return data depending on this
+ * This func isnot used anymore
+ * It may be deleted later
  */
 exports.checkIsAdminLoggedIn = asyncHandler(async (req, res, next) => {
   if (req.method === 'OPTIONS') {
@@ -186,7 +188,7 @@ exports.checkIsAdminLoggedIn = asyncHandler(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-  }/*  else if (req.cookies && req.cookies.jwtAdmin) {
+  } /*  else if (req.cookies && req.cookies.jwtAdmin) {
     token = req.cookies.jwtAdmin;
   } */ else {
     req.admin = undefined;

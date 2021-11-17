@@ -11,17 +11,19 @@ const employeeController = require('../controllers/employeeController');
 
 const router = express.Router();
 
-// Get all active employees
-router.get(
-  '/',
-  employeeController.getAllEmployees
-);
+//////////////// Public routes ////////////////
+
+router.get('/', employeeController.getAllEmployees);
 
 router.get('/username/:username', employeeController.getEmployeeByUsername);
 
-router.use(authMiddleware.checkLoggedUser);
+//////////////// User routes ////////////////
 
-router.patch('/update-me', employeeController.updateMe);
+// Employees only routes
+router.use(
+  authMiddleware.checkLoggedUser,
+  authMiddleware.routeGuard('employee')
+);
 
 router.patch(
   '/portfolio',
@@ -38,8 +40,11 @@ router
   )
   .delete(employeeController.deletePortfolio);
 
+//////////////// Admin routes ////////////////
+
 router.use(authMiddleware.checkLoggedAdmin);
 
+/// Below routes will be used as needed, they're not used yet
 router
   .route('/:id')
   .get(employeeController.getEmployee)

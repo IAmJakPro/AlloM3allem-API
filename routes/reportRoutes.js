@@ -9,12 +9,17 @@ const reportController = require('../controllers/reportController');
 
 const router = express.Router();
 
+//////////////// Public routes ////////////////
+
 router.post('/', reportController.createReport);
+
+//////////////// Admin routes ////////////////
 
 router.use(authMiddleware.checkLoggedAdmin);
 
 router.route('/').get(reportController.getAllReports);
 
+/// Below routes will be used as needed, they're not used yet
 router
   .route('/:id')
   .get(reportController.getReport)

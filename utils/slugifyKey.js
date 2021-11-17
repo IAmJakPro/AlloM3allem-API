@@ -1,3 +1,9 @@
+/**
+ * This function is for slugifying a string with both french and arabic
+ * NOTE: This used mainly in keys in services and cities
+ * My idea here is to make urls in the website localized with french and arabic... or other langs
+ */
+
 module.exports = makeURLFriendly = (string) => {
   let urlFriendlyString = '';
 

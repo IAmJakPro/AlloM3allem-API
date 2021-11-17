@@ -1,6 +1,9 @@
+// Third-party libraries
 const mongoose = require('mongoose');
-const keySlugify = require('../utils/slugifyKey');
 const slugify = require('slugify');
+
+// Utils
+const keySlugify = require('../utils/slugifyKey');
 const { deleteImage } = require('../utils/uploadHelper');
 
 const Schema = mongoose.Schema;
@@ -25,6 +28,7 @@ const serviceSchema = new Schema(
   { timestamps: true }
 );
 
+// Set the keys and _id with slugified name
 serviceSchema.path('name.fr').set(function (v) {
   this._id = slugify(v, {
     replacement: '_',
@@ -48,6 +52,7 @@ serviceSchema.path('name.ar').set(function (v) {
   next();
 }); */
 
+// Automatically delete the image from google cloud storage id a service is deleted
 serviceSchema.post('findOneAndDelete', async function (doc) {
   await deleteImage(`services/${doc._id.toString()}`);
 });

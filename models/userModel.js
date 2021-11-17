@@ -1,13 +1,17 @@
+// Third-party libraries
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-const Employee = require('./employeeModel');
-const Review = require('./reviewModel');
-const Client = require('./clientModel');
-const Notification = require('./notificationModel');
 const { customAlphabet } = require('nanoid');
 const slugify = require('slugify');
+
+// Utils
 const filterObj = require('../utils/filterObj');
+
+// Models
+const Employee = require('./employeeModel');
+const Client = require('./clientModel');
+const Notification = require('./notificationModel');
 
 const Schema = mongoose.Schema;
 
@@ -91,6 +95,7 @@ const userSchema = new Schema(
   }
 );
 
+// Virtuals needed sometimes to get the related employee/client
 userSchema.virtual('employee', {
   ref: 'Employee',
   localField: '_id',
@@ -125,6 +130,7 @@ userSchema.virtual('client', {
 // Document middleware, only works on save() and create()!
 // Doesn't work on update() and insert()!
 userSchema.pre('save', async function (next) {
+  // Generate username
   const slugifiedName = slugify(this.name, {
     lower: true,
     trim: true,
@@ -134,13 +140,15 @@ userSchema.pre('save', async function (next) {
   const prefix = this.type === 'employee' ? 'e' : 'c';
 
   const username = `${prefix}-${slugifiedName}-${generatedId}`;
-
+  // Setting the username
   this.username = username;
 
+  // Automatically create an employee item in db
   if (this.type === 'employee') {
     await Employee.create({ user: this._id, workIn: [this.city] });
   }
 
+  // Automatically create a client item in db
   if (this.type === 'client') {
     await Client.create({ user: this._id });
   }
@@ -157,6 +165,7 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// Delete employee/client docs from db if the user is deleted
 userSchema.post('findOneAndDelete', async function (doc) {
   if (doc.type === 'employee') {
     await Employee.findOneAndDelete({ user: doc._id });
@@ -167,6 +176,7 @@ userSchema.post('findOneAndDelete', async function (doc) {
   }
 });
 
+// Method to notify the user
 userSchema.method('notify', async function (type, data) {
   await Notification.create({
     type,
@@ -175,6 +185,7 @@ userSchema.method('notify', async function (type, data) {
   });
 });
 
+// This function gotten directly from HAMZA's project, not tested yet
 userSchema.methods.generateResetNumber = function () {
   const sucretNumber = String(Math.trunc(Math.random() * 10000000));
 
@@ -264,6 +275,7 @@ userSchema.method('toClient', function (isAdmin, lang) {
   return obj;
 });
 
+// Check if password is correct
 userSchema.methods.isPasswordCorrect = async function (password, userPassword) {
   return await bcrypt.compare(password, userPassword);
 };

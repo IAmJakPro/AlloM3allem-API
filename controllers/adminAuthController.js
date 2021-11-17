@@ -45,7 +45,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * This function is used to handle a user's logging out.
+ * This function is used to handle a admin's logging out.
  *
  * @param {req} req - Express's request object
  * @param {res} res - Express's response object

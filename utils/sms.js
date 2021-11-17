@@ -1,3 +1,8 @@
+/**
+ * Gotten directly from HAMZA's project
+ * NOTE: Not tested yet
+ */
+
 // const messagebird = require('messagebird')(process.env.API_KEY_MESSAGE);
 const accountSid = process.env.TWILIO_ACC_SID;
 const authToken = process.env.TWILIO_ACC_AUTH;

@@ -154,7 +154,7 @@ exports.createPortfolio = asyncHandler(async (req, res, next) => {
 exports.updatePortfolio = asyncHandler(async (req, res, next) => {
   const employee = await Employee.findOne({ user: req.user.id });
   if (!employee) {
-    return next(new AppError("We couldn't any employee with that id!", 404));
+    return next(new AppError("We couldn't find this employee!", 404));
   }
 
   const isPortfolioExists = employee.portfolio.findIndex(
@@ -162,7 +162,7 @@ exports.updatePortfolio = asyncHandler(async (req, res, next) => {
   );
 
   if (isPortfolioExists < 0) {
-    return next(new AppError("We couldn't any portfolio with that id!", 404));
+    return next(new AppError("We couldn't find this portfolio!", 404));
   }
 
   let removedImages = req.body.removed_images;
@@ -205,7 +205,7 @@ exports.updatePortfolio = asyncHandler(async (req, res, next) => {
 exports.deletePortfolio = asyncHandler(async (req, res, next) => {
   const employee = await Employee.findOne({ user: req.user.id });
   if (!employee) {
-    return next(new AppError("We couldn't any employee with that id!", 404));
+    return next(new AppError("We couldn't find this employee!", 404));
   }
 
   const portfolioIndex = employee.portfolio.findIndex(
@@ -213,9 +213,7 @@ exports.deletePortfolio = asyncHandler(async (req, res, next) => {
   );
 
   if (portfolioIndex < 0) {
-    return next(
-      new AppError("We couldn't find any portfolio with that id!", 404)
-    );
+    return next(new AppError("We couldn't find this portfolio!", 404));
   }
 
   const portfolio = employee.portfolio.find((p) => p._id == req.params.id);

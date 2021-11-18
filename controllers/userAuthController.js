@@ -60,7 +60,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   // 1) Check if phone and password exist.
   if (!phone || !password) {
     return next(
-      new AppError('Please provide a phone number number and a password!', 400)
+      new AppError('Please provide a phone number and a password!', 400)
     );
   }
 

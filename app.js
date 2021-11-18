@@ -31,6 +31,9 @@ const AppError = require('./utils/appError');
 
 // Middlewares
 const errorMiddleware = require('./middlewares/errorMiddleware');
+const { ROUTE_NOT_FOUND } = require('./translations/errors');
+const getTranslated = require('./translations/helper');
+const { getHeaderLang } = require('./utils/factory');
 
 // Application Setup.
 const app = express();
@@ -109,7 +112,16 @@ app.use('/api/pages', pageRouter);
 // If we are able to reach other routes - then the request - response cycle would have been finished in the routes.
 // If next() is passed anything - Express will assume that it is an error.
 app.all('*', (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+  next(
+    new AppError(
+      getTranslated(
+        ROUTE_NOT_FOUND,
+        getHeaderLang(req.headers),
+        req.originalUrl
+      ),
+      404
+    )
+  );
 });
 
 // Middleware for error handling.

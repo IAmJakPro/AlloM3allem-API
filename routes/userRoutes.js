@@ -59,6 +59,9 @@ router
   .get(userController.getUser)
   .patch(
     userController.updateUser,
+    (req, res, next) => {
+      console.log(req.body);
+    },
     fileUploadMiddleware.single('image'),
     userController.uploadUserImage
   )

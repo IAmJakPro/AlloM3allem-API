@@ -22,7 +22,7 @@ const serviceSchema = new Schema(
     image: String,
     isActive: {
       type: Boolean,
-      defauls: true,
+      default: true,
     },
   },
   { timestamps: true }

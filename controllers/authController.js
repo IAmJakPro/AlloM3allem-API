@@ -71,7 +71,7 @@ exports.sendResetPassToken = asyncHandler(async (req, res, next) => {
   const { phone } = req.body;
   const user = await User.findOne({ phone });
 
-  if (!user) return next(new AppError('This user not exist', 404));
+  if (!user) return next(new AppError('This user not exist!', 404));
 
   const resetNumber = user.generateResetNumber();
 
@@ -116,7 +116,7 @@ exports.verifTokenRestPass = asyncHandler(async (req, res, next) => {
   });
 
   if (!user) {
-    return next(new AppError('Validation inccorect', 500));
+    return next(new AppError('Validation failed!', 500));
   }
   // link to sumbit new password
   const resetToken = user.genResetTokenForLink();
@@ -148,7 +148,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
   // ila l9a user bhad mowasafat ghaykml ghay3tih yraje3 password
   if (!user) {
-    return next(new AppError('Token is invalid or has expired', 400));
+    return next(new AppError('Token is invalid or has expired!', 400));
   }
   user.password = req.body.password;
   user.linkResetToken = undefined;

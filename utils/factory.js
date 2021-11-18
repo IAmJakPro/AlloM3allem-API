@@ -323,6 +323,10 @@ exports.updateOne = (
     }
 
     // 2) Find and update the doc
+    /* const doc = await Model.findByIdAndUpdate(req.params.id, filteredBody, {
+      new: true,
+      runValidators: true,
+    }); */
     const doc = await Model.findByIdAndUpdate(req.params.id, filteredBody, {
       new: true,
       runValidators: true,

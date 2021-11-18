@@ -108,7 +108,10 @@ router.route('/').get(reviewController.getAllReviews);
 router
   .route('/:id')
   .get(reviewController.getReview)
-  .patch(reviewController.updateReview)
+  .patch((req, res, next) => {
+    console.log(req.body);
+    next();
+  }, reviewController.updateReview)
   .delete(reviewController.deleteReview);
 
 module.exports = router;

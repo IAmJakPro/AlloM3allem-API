@@ -1,10 +1,10 @@
 // Utils
 const factory = require('../utils/factory');
+const asyncHandler = require('../utils/asyncHandler');
 
 // Models
 const Review = require('../models/reviewModel');
 const User = require('../models/userModel');
-const asyncHandler = require('../utils/asyncHandler');
 
 /**
  * Create a single review
@@ -52,10 +52,31 @@ exports.getUserReviews = factory.getAll(Review);
 /**
  * Update a single Review
  */
-exports.updateReview = factory.updateOne(Review, {
-  toAllow: false,
-  user: ['status'],
-});
+exports.updateReview = factory.updateOne(
+  Review,
+  {
+    toAllow: false,
+    user: ['status'],
+  },
+  asyncHandler(async (doc) => {
+    /* const stats = await Review.aggregate([
+      {
+        $match: { rated: doc.rated._id, status: 'approved' },
+      },
+      {
+        $group: {
+          _id: '$rated',
+          ratingQty: { $sum: 1 },
+          avgRating: { $avg: '$stars' },
+        },
+      },
+    ]);
+
+    console.log(stats); */
+
+    await Review.calcAverageRating(doc.rated._id);
+  })
+);
 
 /**
  * Get a single Review

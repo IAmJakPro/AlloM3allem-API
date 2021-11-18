@@ -1,18 +1,23 @@
 // Third-party libraries
 const mongoose = require('mongoose');
 
-const contactSchema = mongoose.Schema({
-  name: {
-    type: String,
+const contactSchema = mongoose.Schema(
+  {
+    name: {
+      type: String,
+    },
+    subject: {
+      type: String,
+    },
+    message: {
+      type: String,
+    },
+    email: { type: String, required: true, unique: true },
   },
-  subject: {
-    type: String,
-  },
-  message: {
-    type: String,
-  },
-  email: { type: String, required: true, unique: true },
-});
+  {
+    timestamps: true,
+  }
+);
 
 contactSchema.method('toClient', function () {
   const obj = this.toObject({ getters: true });

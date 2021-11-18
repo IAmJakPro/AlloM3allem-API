@@ -58,12 +58,9 @@ router
   .route('/:id')
   .get(userController.getUser)
   .patch(
-    userController.updateUser,
-    (req, res, next) => {
-      console.log(req.body);
-    },
     fileUploadMiddleware.single('image'),
-    userController.uploadUserImage
+    userController.uploadUserImage,
+    userController.updateUser
   )
   .delete(userController.deleteUser);
 

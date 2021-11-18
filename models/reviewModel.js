@@ -64,7 +64,7 @@ reviewSchema.statics.calcAverageRating = async function (userID) {
   }
 };
 
-reviewSchema.post('save', function () {
+/* reviewSchema.post('save', function () {
   // this points to current review
   this.constructor.calcAverageRating(this.rated);
 });
@@ -72,14 +72,17 @@ reviewSchema.post('save', function () {
 // findByIdAndUpdate
 // findByIdAndDelete
 reviewSchema.pre(/^findOneAnd/, async function (next) {
-  this.r = await this.findOne();
+  if (!this.r) {
+    this.r = await this.findOne();
+  }
 
   next();
 });
 
 reviewSchema.post(/^findOneAnd/, async function () {
-  await this.r.constructor.calcAverageRating(this.r.rated);
-});
+  console.log(this.rated);
+  await this.constructor.calcAverageRating(this.rated);
+}); */
 
 reviewSchema.pre(/^find/, function (next) {
   this.populate('rater', 'username id name image').populate(

@@ -239,7 +239,7 @@ userSchema.method('toClient', function (isAdmin, lang) {
       obj,
       false,
       '_id',
-      'id',
+      //'id',
       'status',
       'updatedAt',
       'employee',
@@ -271,7 +271,7 @@ userSchema.method('toClient', function (isAdmin, lang) {
     const clientObject = Object.assign(filteredUser, filteredProfile);
     return clientObject;
   }
-
+  console.log(obj);
   return obj;
 });
 

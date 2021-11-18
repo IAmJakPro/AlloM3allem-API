@@ -41,9 +41,11 @@ exports.upload = asyncHandler(async (req, res, next) => {
     return next();
   }
 
+  console.log('Images: ', images);
+
   for (const image in images) {
     const img = images[image][0];
-    console.log(img);
+    console.log('Single img: ', img);
     const imageUrl = await uploadImage(img, 'settings');
     if (img.fieldname === 'logo') {
       req.body.logo = imageUrl;
@@ -52,6 +54,9 @@ exports.upload = asyncHandler(async (req, res, next) => {
     if (img.fieldname === 'icon') {
       req.body.icon = imageUrl;
     }
+
+    console.log(req.body.icon);
+    console.log(req.body.logo);
   }
 
   next();

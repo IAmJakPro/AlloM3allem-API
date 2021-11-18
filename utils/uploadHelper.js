@@ -42,7 +42,8 @@ const uploadImage = (file, bucketFolder) =>
         );
         resolve(publicUrl);
       })
-      .on('error', () => {
+      .on('error', (err) => {
+        console.log('ERR: ', err);
         reject(`Unable to upload image, something went wrong`);
       })
       .end(buffer);

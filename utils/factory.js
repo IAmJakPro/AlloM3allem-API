@@ -417,7 +417,6 @@ exports.getAllAggregate = (Model, aggregateOtions, project) =>
 
     aggregate_options.push({ $project: project(getLang(req.headers)) });
 
-    aggregate_options.push({ $sort: { 'user.createdAt': 'desc' } });
 
     // 4) Set up the aggregation
     const myAggregate = Model.aggregate(aggregate_options);

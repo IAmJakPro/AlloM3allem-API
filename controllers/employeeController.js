@@ -86,6 +86,8 @@ exports.getAllEmployees = factory.getAllAggregate(
         as: 'workIn',
       },
     },
+
+    { $sort: { 'user.createdAt': -1 } }
   ],
   (lang) => ({
     workIn: lang === 'fr' ? '$workIn.name.fr' : '$workIn.name.ar',

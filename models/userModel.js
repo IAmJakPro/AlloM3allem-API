@@ -63,7 +63,7 @@ const userSchema = new Schema(
       required: true,
       enum: ['employee', 'client'],
     },
-    image: String,
+    image: {type: String, default: 'https://storage.googleapis.com/alomaallem_bucket/users/avatar.png'},
     avgRating: {
       type: Number,
       default: 0,

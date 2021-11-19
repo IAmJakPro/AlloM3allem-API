@@ -214,6 +214,7 @@ exports.getAll = (Model, options = {}) =>
     // 5) Get the populated docs
     docs = await handlePopulates(
       Model.find(query)
+        .sort({ createdAt: 'desc' })
         .skip((parseInt(page) - 1) * limit)
         .limit(limit * 1),
       toPopulate
@@ -415,6 +416,8 @@ exports.getAllAggregate = (Model, aggregateOtions, project) =>
     aggregate_options.push(...aggregateOtions);
 
     aggregate_options.push({ $project: project(getLang(req.headers)) });
+
+    aggregate_options.push({ $sort: { 'user.createdAt': 'desc' } });
 
     // 4) Set up the aggregation
     const myAggregate = Model.aggregate(aggregate_options);

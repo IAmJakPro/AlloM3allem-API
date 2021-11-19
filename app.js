@@ -25,6 +25,7 @@ const appointmentRouter = require('./routes/appointmentRoutes');
 const contractRouter = require('./routes/contractRoutes');
 const settingRouter = require('./routes/settingRoutes');
 const pageRouter = require('./routes/pageRoutes');
+const analyticRouter = require('./routes/analyticRoutes');
 
 // Utilities
 const AppError = require('./utils/appError');
@@ -106,6 +107,7 @@ app.use('/api/appointments', appointmentRouter);
 app.use('/api/contracts', contractRouter);
 app.use('/api/settings', settingRouter);
 app.use('/api/pages', pageRouter);
+app.use('/api/analytics', analyticRouter);
 
 // Defining undefined routes.
 // If we are able to reach this point - then no route match.

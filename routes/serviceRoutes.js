@@ -18,6 +18,8 @@ router.get('/', serviceController.getAllServices);
 
 router.use(authMiddleware.checkLoggedAdmin);
 
+router.use(authMiddleware.routeGuard('super_admin', 'admin'));
+
 router.post(
   '/',
   fileUploadMiddleware.single('image'),

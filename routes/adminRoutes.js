@@ -19,10 +19,10 @@ router.use(authMiddleware.checkLoggedAdmin);
 
 router.get('/logout', adminAuthController.logout);
 
-router.get('/', adminController.getAllAdmins);
-
 // Super admins only routes
 router.use(authMiddleware.routeGuard('super_admin'));
+
+router.get('/', adminController.getAllAdmins);
 
 router.post('/', adminController.createAdmin);
 

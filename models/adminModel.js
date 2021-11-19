@@ -17,7 +17,7 @@ const adminSchema = new Schema(
     password: { type: String, required: true, minlength: 6 },
     role: {
       type: String,
-      enum: ['admin', 'super_admin'],
+      enum: ['admin', 'viewer', 'super_admin'],
       default: 'admin',
     },
     isActive: {

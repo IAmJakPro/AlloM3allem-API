@@ -45,14 +45,16 @@ router.patch('/update-password', userController.updatePassword);
 
 router.use(authMiddleware.checkLoggedAdmin);
 
-router
-  .route('/')
-  .get(userController.getAllUsers)
-  .post(
-    fileUploadMiddleware.single('image'),
-    userController.uploadUserImage,
-    userController.createUser
-  );
+router.get('/', userController.getAllUsers);
+
+router.use(authMiddleware.routeGuard('super_admin', 'admin'));
+
+router.post(
+  '/',
+  fileUploadMiddleware.single('image'),
+  userController.uploadUserImage,
+  userController.createUser
+);
 
 router
   .route('/:id')

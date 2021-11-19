@@ -13,6 +13,7 @@ const router = express.Router();
 //////////////// Admin routes ////////////////
 
 router.use(authMiddleware.checkLoggedAdmin);
+router.use(authMiddleware.routeGuard('super_admin', 'admin'));
 
 router
   .route('/')

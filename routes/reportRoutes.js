@@ -19,6 +19,8 @@ router.use(authMiddleware.checkLoggedAdmin);
 
 router.route('/').get(reportController.getAllReports);
 
+router.use(authMiddleware.routeGuard('super_admin', 'admin'));
+
 /// Below routes will be used as needed, they're not used yet
 router
   .route('/:id')

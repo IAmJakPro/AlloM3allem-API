@@ -18,11 +18,12 @@ exports.createAppointment = factory.createOne(
 
   // Notify the employee
   asyncHandler(async (doc) => {
-    const user = await User.findById(doc.employee);
-    await user.notify('appointment', {
+    const employee = await User.findById(doc.employee);
+    const client = await User.findById(doc.client);
+    await employee.notify('appointment', {
       message: {
-        fr: `Vous avez reçu une nouvelle demande de service de ${req.user.name}`,
-        ar: `لقد تلقيت طلب خدمة جديدًا من ${req.user.name}`,
+        fr: `Vous avez reçu une nouvelle demande de service de ${client.name}`,
+        ar: `لقد تلقيت طلب خدمة جديدًا من ${client.name}`,
       },
     });
   })

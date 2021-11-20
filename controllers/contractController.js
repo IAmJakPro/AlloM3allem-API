@@ -25,11 +25,12 @@ exports.createContract = factory.createOne(
     });
 
     // Notify the client
-    const user = await User.findById(appointment.client);
-    await user.notify('contract', {
+    const client = await User.findById(appointment.client);
+    const employee = await User.findById(appointment.employee);
+    await client.notify('contract', {
       message: {
-        fr: `${req.user.name} a accepté votre demande de service et il a créé un contrat`,
-        ar: `وافق ${req.user.name} على طلب الخدمة الخاص بك وقام بإنشاء عقد`,
+        fr: `${employee.name} a accepté votre demande de service et il a créé un contrat`,
+        ar: `وافق ${employee.name} على طلب الخدمة الخاص بك وقام بإنشاء عقد`,
       },
       contract_id: doc._id,
       appointment_id: appointment._id,
@@ -41,8 +42,11 @@ exports.createContract = factory.createOne(
  * Accept the contract
  */
 exports.acceptContract = asyncHandler(async (req, res, next) => {
-  const contract = await Contract.findByIdAndUpdate(
-    { _id: req.params.id, client: req.user.id },
+  /* if (contract.status === 'accepted') {
+    return next(new appError("You've already accepted this contract", 400));
+  } */
+  const contract = await Contract.findOneAndUpdate(
+    { _id: req.params.id, client: req.user.id, status: { $ne: 'accepted' } },
     {
       status: 'accepted',
     }

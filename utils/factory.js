@@ -324,10 +324,6 @@ exports.updateOne = (
     }
 
     // 2) Find and update the doc
-    /* const doc = await Model.findByIdAndUpdate(req.params.id, filteredBody, {
-      new: true,
-      runValidators: true,
-    }); */
     const doc = await Model.findByIdAndUpdate(req.params.id, filteredBody, {
       new: true,
       runValidators: true,
@@ -416,7 +412,6 @@ exports.getAllAggregate = (Model, aggregateOtions, project) =>
     aggregate_options.push(...aggregateOtions);
 
     aggregate_options.push({ $project: project(getLang(req.headers)) });
-
 
     // 4) Set up the aggregation
     const myAggregate = Model.aggregate(aggregate_options);

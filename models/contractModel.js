@@ -59,9 +59,9 @@ const contractSchema = Schema(
   }
 );
 
-contractSchema.pre('save', function (next) {
-  if (this.isModified('status') && this.status === 'accepted') {
-    this.acceptedAt = new Date();
+contractSchema.pre('findOneAndUpdate', function (next) {
+  if (this._update.status && this._update.status === 'accepted') {
+    this._update.acceptedAt = new Date();
   }
   next();
 });

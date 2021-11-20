@@ -3,6 +3,7 @@ const express = require('express');
 
 // Utils
 const asyncHandler = require('../utils/asyncHandler');
+const AppError = require('../utils/appError');
 
 // Middlewares
 const authMiddleware = require('../middlewares/authMiddleware');
@@ -13,7 +14,6 @@ const appointmentController = require('../controllers/appointmentController');
 
 // Models
 const User = require('../models/userModel');
-const AppError = require('../utils/appError');
 
 const router = express.Router();
 

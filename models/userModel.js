@@ -63,7 +63,11 @@ const userSchema = new Schema(
       required: true,
       enum: ['employee', 'client'],
     },
-    image: {type: String, default: 'https://storage.googleapis.com/alomaallem_bucket/users/avatar.png'},
+    image: {
+      type: String,
+      default:
+        'https://storage.googleapis.com/alomaallem_bucket/users/avatar.png',
+    },
     avgRating: {
       type: Number,
       default: 0,
@@ -126,6 +130,18 @@ userSchema.virtual('client', {
 
   return v;
 }); */
+
+userSchema.pre('findOneAndUpdate', async function (next) {
+  // Only run the encryption if the password is modified.
+  if (!this._update.password) {
+    return next();
+  }
+
+  // Encrypt the password with BCRYPT Algorithm.
+  this._update.password = await bcrypt.hash(this._update.password, 12);
+  this._update.passwordChangedAt = new Date(Date.now() + 1000);
+  next();
+});
 
 // Document middleware, only works on save() and create()!
 // Doesn't work on update() and insert()!

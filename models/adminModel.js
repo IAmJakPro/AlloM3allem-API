@@ -28,6 +28,17 @@ const adminSchema = new Schema(
   { timestamps: true }
 );
 
+adminSchema.pre('findOneAndUpdate', async function (next) {
+  // Only run the encryption if the password is modified.
+  if (!this._update.password) {
+    return next();
+  }
+
+  // Encrypt the password with BCRYPT Algorithm.
+  this._update.password = await bcrypt.hash(this._update.password, 12);
+  next();
+});
+
 adminSchema.pre('save', async function (next) {
   // Only run the encryption if the password is modified.
   if (!this.isModified('password')) {

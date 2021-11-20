@@ -20,6 +20,7 @@
     "express": "^4.17.1",
     "express-mongo-sanitize": "^2.1.0",
     "express-rate-limit": "^5.5.1",
+    "he": "^1.2.0",
     "helmet": "^4.6.0",
     "hpp": "^0.2.3",
     "jsonwebtoken": "^8.5.1",
@@ -29,6 +30,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.3",
     "nanoid": "^3.1.30",
+    "sanitize-html": "^2.5.3",
     "slugify": "^1.6.1",
     "twilio": "^3.71.1",
     "xss-clean": "^0.1.1"

@@ -133,7 +133,7 @@ userSchema.virtual('client', {
 
 userSchema.pre('findOneAndUpdate', async function (next) {
   // Only run the encryption if the password is modified.
-  if (!this._update.password) {
+  if (!this._update || !this._update.password) {
     return next();
   }
 

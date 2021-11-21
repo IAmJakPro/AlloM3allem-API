@@ -16,18 +16,22 @@ const employeeSchema = mongoose.Schema(
       type: Number,
       min: 14,
       max: 150,
+      default: null,
     },
     service: {
       type: String,
       ref: 'Service',
+      default: null,
     },
     experience: {
       type: Number,
       min: 1,
       max: 100,
+      default: null,
     },
     description: {
       type: String,
+      default: null,
     },
     isAvailable: {
       type: Boolean,

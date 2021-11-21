@@ -29,10 +29,12 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   const filteredAccountBody = filterObj(req.body, true, 'phone', 'city');
 
   // 3) Update the account.
-  const updatedAccount = await User.findByIdAndUpdate(
-    req.user._id,
-    filteredAccountBody
-  );
+  if (Object.keys(filteredAccountBody).length > 0) {
+    const updatedAccount = await User.findByIdAndUpdate(
+      req.user._id,
+      filteredAccountBody
+    );
+  }
 
   if (req.user.type === 'employee') {
     const filteredProfileBody = filterObj(req.body, false, 'user', 'portfolio');

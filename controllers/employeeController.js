@@ -26,26 +26,27 @@ const filterObj = require('../utils/filterObj');
 
 // Models
 const Employee = require('../models/employeeModel');
+const User = require('../models/userModel');
 
 /**
  * Get a single employee by username
  */
 exports.getEmployeeByUsername = asyncHandler(async (req, res, next) => {
-  const employee = await Employee.findOne().populate({
+  /* const employee = await Employee.findOne().populate({
     path: 'user',
     match: {
       username: req.params.username,
       type: 'employee',
       status: 'active',
     },
-  });
-  /* const user = await User.findOne({
+  }); */
+  const user = await User.findOne({
     username: req.params.username,
     type: 'employee',
     status: 'active',
   }).populate('employee');
- */
-  const user = employee.user;
+
+  //const user = employee.user;
   if (!user) {
     return next(
       new AppError('User with given username not found or not active!', 404)
@@ -54,7 +55,7 @@ exports.getEmployeeByUsername = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: employee.toClient(false, factory.getHeaderLang(req.headers)),
+    data: user.toClient(false, factory.getHeaderLang(req.headers)),
   });
 });
 
@@ -87,9 +88,10 @@ exports.getAllEmployees = factory.getAllAggregate(
       },
     },
 
-    { $sort: { 'user.createdAt': -1 } }
+    { $sort: { 'user.createdAt': -1 } },
   ],
   (lang) => ({
+    id: '$user._id',
     workIn: lang === 'fr' ? '$workIn.name.fr' : '$workIn.name.ar',
     name: '$user.name',
     city: lang === 'fr' ? '$user.city.name.fr' : '$user.city.name.ar',

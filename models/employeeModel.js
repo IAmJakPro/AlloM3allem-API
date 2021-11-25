@@ -111,8 +111,8 @@ employeeSchema.method('toClient', function (isAdmin, lang) {
   }
 
   obj = Object.assign(
-    filterObj(obj, false, 'id', '_id', 'user'),
-    filterObj(obj.user, false, '_id', 'id', 'status')
+    filterObj(obj, false, 'id', 'user'),
+    filterObj(obj.user, false, '_id', 'status')
   );
 
   return obj;

@@ -287,7 +287,6 @@ userSchema.method('toClient', function (isAdmin, lang) {
     const clientObject = Object.assign(filteredUser, filteredProfile);
     return clientObject;
   }
-  console.log(obj);
   return obj;
 });
 

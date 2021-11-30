@@ -6,7 +6,7 @@ const MIME_TYPE_MAP = {
   'image/png': 'png',
   'image/jpeg': 'jpeg',
   'image/jpg': 'jpg',
-  //'image/svg+xml': 'svg',
+  'image/svg+xml': 'svg',
 };
 
 // Upload middleware

@@ -18,12 +18,12 @@ router.get('/', employeeController.getAllEmployees);
 router.get('/username/:username', employeeController.getEmployeeByUsername);
 
 //////////////// User routes ////////////////
+router.use(authMiddleware.checkLoggedUser);
+
+router.get('/:id/phone', employeeController.showPhoneNumber);
 
 // Employees only routes
-router.use(
-  authMiddleware.checkLoggedUser,
-  authMiddleware.routeGuard('employee')
-);
+router.use(authMiddleware.routeGuard('employee'));
 
 router.patch(
   '/portfolio',

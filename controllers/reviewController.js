@@ -17,11 +17,12 @@ exports.createReview = factory.createOne(
   },
   // Notify the rated user
   asyncHandler(async (doc) => {
-    const user = await User.findById(doc.rated);
-    user.notify('review', {
+    const rated = await User.findById(doc.rated);
+    const rater = await User.findById(doc.rater).select('name');
+    rated.notify('review', {
       message: {
-        fr: `Vous avez un nouvel avis de ${req.user.name}`,
-        ar: `لديك تقييم جديد من ${req.user.name}`,
+        fr: `Vous avez un nouvel avis de ${rater.name}`,
+        ar: `لديك تقييم جديد من ${rater.name}`,
       },
     });
   })

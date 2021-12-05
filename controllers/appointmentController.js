@@ -34,9 +34,9 @@ exports.createAppointment = factory.createOne(
  */
 exports.myAppointments = factory.getAll(Appointment, {
   toPopulate: [
-    { path: 'contract', select: 'id -appointment' },
-    { path: 'employee', select: 'name username' },
-    { path: 'client', select: 'name username' },
+    { path: 'contract'},
+    { path: 'employee', select: 'name username phone' },
+    { path: 'client', select: 'name username phone' },
   ],
 });
 /* asyncHandler(async (req, res, next) => {

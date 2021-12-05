@@ -28,7 +28,7 @@ const reviewSchema = Schema(
     status: {
       type: String,
       enum: ['approved', 'disapproved', 'deleted'],
-      default: 'approved',
+      default: 'disapproved',
     },
   },
   {

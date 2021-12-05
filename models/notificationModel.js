@@ -1,5 +1,6 @@
 // Third-party libraries
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 const Schema = mongoose.Schema;
 
@@ -39,6 +40,9 @@ notificationSchema.method('toClient', function (isAdmin, lang) {
       obj.data.message = obj.data.message[lang];
     }
   }
+
+  moment.locale(lang);
+  obj.createdAt = moment(obj.createdAt).fromNow();
 
   //Rename fields
   delete obj._id;

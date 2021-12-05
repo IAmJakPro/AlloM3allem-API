@@ -66,8 +66,17 @@ pageSchema.pre('save', function (next) {
   next();
 });
 
-pageSchema.method('toClient', function () {
+pageSchema.method('toClient', function (isAdmin, lang) {
   const obj = this.toObject({ getters: true });
+
+  if (lang) {
+    if (obj.title) {
+      obj.title = obj.title[lang];
+    }
+    if (obj.body) {
+      obj.body = obj.body[lang];
+    }
+  }
 
   delete obj._id;
 

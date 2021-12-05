@@ -32,11 +32,13 @@ router.post(
   userMiddleware.getMeInBody,
   asyncHandler(async (req, res, next) => {
     if (req.body.appointment) {
-      const appointment = await Appointment.findById(req.body.appointment);
+      const appointment = await Appointment.findById(
+        req.body.appointment
+      );
       if (!appointment) {
         return next(new AppError('This job request is not exists', 404));
       }
-      req.body.client = appointment.client._id || appointment.client;
+      req.body.client = appointment.client.toString();
     }
     next();
   }),

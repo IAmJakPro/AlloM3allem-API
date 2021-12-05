@@ -5,6 +5,7 @@ const { uploadImage } = require('../utils/uploadHelper');
 
 // Models
 const Setting = require('../models/settingModel');
+const Page = require('../models/pageModel');
 
 //////////////////////////////////////////////
 ////////////// Only admins (of course) ///////////////////
@@ -15,9 +16,17 @@ const Setting = require('../models/settingModel');
  */
 exports.getSettings = asyncHandler(async (req, res, next) => {
   const settings = await Setting.findOne();
+  const pages = await Page.find({ isActive: true })
+    .limit(5)
+    .select('slug title');
+  const isAdmin = factory.isAdmin(req);
+  const lang = factory.getHeaderLang(req.headers);
   res.status(200).json({
     status: 'success',
-    data: settings,
+    data: {
+      ...settings.toClient(isAdmin, lang),
+      pages: pages.map((page) => page.toClient(isAdmin, lang)),
+    },
   });
 });
 

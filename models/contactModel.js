@@ -5,14 +5,17 @@ const contactSchema = mongoose.Schema(
   {
     name: {
       type: String,
+      require: true,
     },
     subject: {
       type: String,
+      require: true,
     },
     message: {
       type: String,
+      require: true,
     },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true },
   },
   {
     timestamps: true,

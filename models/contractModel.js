@@ -96,6 +96,8 @@ contractSchema.method('toClient', function (isAdmin, lang) {
   if (obj.appointment) {
     delete obj.appointment._id;
   }
+
+
   //Rename fields
   delete obj._id;
 

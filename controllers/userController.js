@@ -26,11 +26,19 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   // 2) If not, simply update the User document.
   // We'll only get the 'phone' and 'city'.
   // Filter out unwanted field names first, that are not allowed to be updated.
-  const filteredAccountBody = filterObj(req.body, true, 'phone', 'city');
+  const filteredAccountBody = filterObj(
+    req.body,
+    true,
+    'phone',
+    'city',
+    'image',
+    'sexe'
+  );
 
   // 3) Update the account.
+  let updatedAccount;
   if (Object.keys(filteredAccountBody).length > 0) {
-    const updatedAccount = await User.findByIdAndUpdate(
+    updatedAccount = await User.findByIdAndUpdate(
       req.user._id,
       filteredAccountBody
     );
@@ -38,7 +46,6 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
   if (req.user.type === 'employee') {
     const filteredProfileBody = filterObj(req.body, false, 'user', 'portfolio');
-
     // 4) Update employee profile.
     const updatedProfile = await Employee.findOneAndUpdate(
       { user: req.user._id },
@@ -48,7 +55,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: {},
+    data: req.body.image ? { image: req.body.image } : {},
   });
 });
 
@@ -57,7 +64,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
  */
 exports.updatePassword = asyncHandler(async (req, res, next) => {
   const { password, currentPassword } = req.body;
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user.id).select('password');
   if (
     !user ||
     !(await user.isPasswordCorrect(currentPassword, user.password))
@@ -79,6 +86,7 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
  */
 exports.uploadUserImage = asyncHandler(async (req, res, next) => {
   const image = req.file;
+  console.log(image);
   if (!image || image === undefined) {
     return next();
   }

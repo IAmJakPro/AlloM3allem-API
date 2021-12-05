@@ -65,8 +65,12 @@ const userSchema = new Schema(
     },
     image: {
       type: String,
-      default:
-        'https://storage.googleapis.com/alomaallem_bucket/users/avatar.png',
+      default: 'https://storage.googleapis.com/allom3allem1/users/avatar.png',
+    },
+    sexe: {
+      type: String,
+      enum: ['m', 'f', 'none'],
+      default: 'none',
     },
     avgRating: {
       type: Number,
@@ -84,11 +88,15 @@ const userSchema = new Schema(
     status: {
       type: String,
       enum: ['active', 'desactive', 'blocked', 'deleted'],
-      default: 'active',
+      default: 'desactive',
     },
+    lastLogInAt: Date,
     linkResetToken: String,
     linkResetTokenExpire: Date,
-    passwordChangedAt: Date,
+    passwordChangedAt: {
+      type: Date,
+      select: false
+    },
     passwordResetToken: String,
     passwordResetTokenExpire: Date,
   },
@@ -146,6 +154,14 @@ userSchema.pre('findOneAndUpdate', async function (next) {
 // Document middleware, only works on save() and create()!
 // Doesn't work on update() and insert()!
 userSchema.pre('save', async function (next) {
+  // Only run the encryption if the password is modified.
+  if (this.isModified('password')) {
+    // Encrypt the password with BCRYPT Algorithm.
+    this.password = await bcrypt.hash(this.password, 12);
+    this.passwordChangedAt = new Date(Date.now() + 1000);
+    return next();
+  }
+
   // Generate username
   const slugifiedName = slugify(this.name, {
     lower: true,
@@ -168,15 +184,6 @@ userSchema.pre('save', async function (next) {
   if (this.type === 'client') {
     await Client.create({ user: this._id });
   }
-
-  // Only run the encryption if the password is modified.
-  if (!this.isModified('password')) {
-    return next();
-  }
-
-  // Encrypt the password with BCRYPT Algorithm.
-  this.password = await bcrypt.hash(this.password, 12);
-  this.passwordChangedAt = new Date(Date.now() + 1000);
 
   next();
 });

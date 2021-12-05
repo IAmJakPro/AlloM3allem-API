@@ -270,9 +270,10 @@ exports.getOne = (Model, findBy = '', options = {}) =>
         findByObj[f] = userFilters[f];
       }
     }
+
     // 4) Get the populated docs
     const doc = await handlePopulates(
-      findByObj && Object.keys(findByObj) > 0
+      findByObj && Object.keys(findByObj).length > 0
         ? Model.findOne(findByObj)
         : Model.findById(identifier),
       toPopulate

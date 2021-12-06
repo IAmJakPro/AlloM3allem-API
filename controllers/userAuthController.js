@@ -110,14 +110,14 @@ exports.login = asyncHandler(async (req, res, next) => {
   console.log('This is inside login: ', getIp(req));
   console.log('ClientIP in auth: ', req.clientIp);
 
-  /* function getipAddress(req) {
+  function getipAddress(req) {
     return (
       req.ip ||
       req._remoteAddress ||
       (req.connection && req.connection.remoteAddress) ||
       undefined
     );
-  } */
+  }
 
   console.log('This is how it is: ', getipAddress(req));
 

@@ -68,11 +68,14 @@ var getIpInfo = function (ip) {
 };
 
 var getIp = function (req) {
+  console.log('REQ: ', req);
+  console.log('END REQ');
   var xForwardedFor = (req.headers['x-forwarded-for'] || '').replace(
     /:\d+$/,
     ''
   );
   var ip = xForwardedFor || req.connection.remoteAddress;
+  console.group('IP: ', ip);
   return { ip, ...getIpInfo(ip) };
 };
 

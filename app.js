@@ -81,6 +81,11 @@ const limiter = rateLimit({
   message: 'Too many requests! Please try again in an hour!',
 });
 
+app.use((req, res, next) => {
+  console.log('FIRST REQ: ', req);
+  console.log('END FIRST REQ');
+});
+
 // Development Logs
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));

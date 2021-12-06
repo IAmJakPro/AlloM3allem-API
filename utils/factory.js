@@ -383,7 +383,7 @@ exports.deleteOne = (Model, callback) =>
  * @param {Object} project - Project in aggregate is the format that you want to return the document with as an object
  * @returns
  */
-exports.getAllAggregate = (Model, aggregateOtions, project) =>
+exports.getAllAggregate = (Model, aggregateOtions, project, callback) =>
   asyncHandler(async (req, res, next) => {
     // 1) Extract request queries
     const { page = 1, search = '', limit = 100 } = req.query;
@@ -419,6 +419,8 @@ exports.getAllAggregate = (Model, aggregateOtions, project) =>
 
     // 5) Paginate and execute aggregation
     const result = await Model.aggregatePaginate(myAggregate, options);
+
+    callback(req);
 
     // 6) Return the json response
     return res.status(200).json({ status: 'success', ...result });

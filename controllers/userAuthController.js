@@ -8,6 +8,7 @@ const AppError = require('../utils/appError');
 
 // Models
 const User = require('../models/userModel');
+const Setting = require('../models/settingModel');
 
 // Controllers
 const authController = require('./authController');
@@ -38,7 +39,10 @@ exports.signup = asyncHandler(async (req, res, next) => {
     city,
   });
 
+  const settings = await Setting.findOne().select('logo');
+
   await newUser.notify('welcome', {
+    image: settings.logo,
     message: {
       fr: `Bienvenu ${name} sur AlloM3allem`,
       ar: `مرحبًا بك ${name} في الومعلم`,

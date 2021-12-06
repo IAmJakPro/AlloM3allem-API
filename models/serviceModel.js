@@ -24,6 +24,13 @@ const serviceSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    searches: [
+      {
+        ip: String,
+        searchedAt: Date,
+        user: { type: Schema.ObjectId, ref: 'User' },
+      },
+    ],
   },
   { timestamps: true }
 );

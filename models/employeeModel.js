@@ -5,7 +5,18 @@ const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
 // Utils
 const filterObj = require('../utils/filterObj');
 
-const employeeSchema = mongoose.Schema(
+const { Schema } = mongoose;
+
+const profileVisitSchema = new Schema(
+  {
+    employee: { type: Schema.ObjectId, ref: 'User', required: true },
+    visitor_ip: String,
+    visitor: { type: Schema.ObjectId, ref: 'User' },
+  },
+  { timestamps: true }
+);
+
+const employeeSchema = new Schema(
   {
     user: {
       type: mongoose.Schema.ObjectId,
@@ -51,6 +62,7 @@ const employeeSchema = mongoose.Schema(
       },
     ],
   },
+
   {
     timestamps: true,
   }
@@ -118,4 +130,15 @@ employeeSchema.method('toClient', function (isAdmin, lang) {
   return obj;
 });
 
-module.exports = mongoose.model('Employee', employeeSchema);
+/* module.exports = Object.assign(mongoose.model('Employee', employeeSchema), {
+  ProfileVisit: mongoose.model(
+    'ProfileVisit',
+    profileVisitSchema
+  )
+}); */
+
+const Employee = mongoose.model('Employee', employeeSchema);
+const ProfileVisit = mongoose.model('ProfileVisit', profileVisitSchema);
+module.exports = { Employee, ProfileVisit };
+
+//exports.ProfileVisit = ProfileVisit;

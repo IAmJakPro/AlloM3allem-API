@@ -28,6 +28,7 @@ exports.createContract = factory.createOne(
     const client = await User.findById(appointment.client);
     const employee = await User.findById(appointment.employee);
     await client.notify('contract', {
+      image: employee.image,
       message: {
         fr: `${employee.name} a accepté votre demande de service et il a créé un contrat`,
         ar: `وافق ${employee.name} على طلب الخدمة الخاص بك وقام بإنشاء عقد`,
@@ -64,6 +65,7 @@ exports.acceptContract = asyncHandler(async (req, res, next) => {
   // Notify employee
   const user = await User.findById(contract.employee);
   await user.notify('contract', {
+    image: req.user.image,
     message: {
       fr: `${req.user.name} a accepté votre contrat`,
       ar: `لقد قام ${req.user.name} بقبول عقدك`,
@@ -111,6 +113,7 @@ exports.updateMyContract = asyncHandler(async (req, res, next) => {
 
   // Notify client
   await user.notify('contract', {
+    image: req.user.image,
     message: {
       fr: `${req.user.name} a mis à jour votre contrat`,
       ar: `قام ${req.user.name} بتحديث عقدك`,

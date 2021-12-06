@@ -18,8 +18,9 @@ exports.createReview = factory.createOne(
   // Notify the rated user
   asyncHandler(async (doc) => {
     const rated = await User.findById(doc.rated);
-    const rater = await User.findById(doc.rater).select('name');
+    const rater = await User.findById(doc.rater).select('name image');
     rated.notify('review', {
+      image: rater.image,
       message: {
         fr: `Vous avez un nouvel avis de ${rater.name}`,
         ar: `لديك تقييم جديد من ${rater.name}`,

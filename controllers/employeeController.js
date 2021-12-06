@@ -17,6 +17,9 @@ Array.prototype.remove = function () {
   return this;
 };
 
+// Third-party libraries
+const requestIp = require('request-ip');
+
 // Utils
 const factory = require('../utils/factory');
 const asyncHandler = require('../utils/asyncHandler');
@@ -25,8 +28,9 @@ const { uploadImage, deleteImage } = require('../utils/uploadHelper');
 const filterObj = require('../utils/filterObj');
 
 // Models
-const Employee = require('../models/employeeModel');
 const User = require('../models/userModel');
+const { Employee, ProfileVisit } = require('../models/employeeModel');
+const Search = require('../models/searchModel');
 
 /**
  * Get a single employee by username
@@ -52,6 +56,13 @@ exports.getEmployeeByUsername = asyncHandler(async (req, res, next) => {
       new AppError('User with given username not found or not active!', 404)
     );
   }
+
+  const clientIp = requestIp.getClientIp(req);
+  const profileVisit = await ProfileVisit.create({
+    employee: user._id,
+    visitor_ip: clientIp,
+    visitor: req.user && req.user._id !== user._id ? req.user._id : null,
+  });
 
   res.status(200).json({
     status: 'success',
@@ -101,7 +112,20 @@ exports.getAllEmployees = factory.getAllAggregate(
     isAvailable: '$isAvailable',
     image: '$user.image',
     service: lang === 'fr' ? '$service.name.fr' : '$service.name.ar',
-  })
+  }),
+  async (req) => {
+    const { city = 'all', service = 'all' } = req.query;
+    const clientIp = requestIp.getClientIp(req);
+
+    console.log(req.query);
+
+    const search = await Search.create({
+      ip: clientIp,
+      city,
+      service,
+      user: req.user && req.user._id ? req.user._id : null,
+    });
+  }
 );
 
 /**

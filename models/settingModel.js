@@ -36,6 +36,11 @@ const settingSchema = new Schema({
     type: Boolean,
     defaut: false,
   },
+  tracking: {
+    inside_head: String,
+    body_start: String,
+    body_end: String,
+  },
 });
 
 settingSchema.method('toClient', function (isAdmin, lang) {

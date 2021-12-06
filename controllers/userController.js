@@ -4,10 +4,11 @@ const asyncHandler = require('../utils/asyncHandler');
 const AppError = require('../utils/appError');
 const filterObj = require('../utils/filterObj');
 const { uploadImage } = require('../utils/uploadHelper');
-const Employee = require('../models/employeeModel');
 
 // Models
 const User = require('../models/userModel');
+const Setting = require('../models/settingModel');
+const { Employee } = require('../models/employeeModel');
 
 /**
  * Update my profile
@@ -106,7 +107,9 @@ exports.uploadUserImage = asyncHandler(async (req, res, next) => {
  * Create a single user
  */
 exports.createUser = factory.createOne(User, {}, async (user) => {
+  const settings = await Setting.findOne().select('logo');
   await user.notify('welcome', {
+    image: setting.logo,
     message: {
       fr: `Bienvenu ${user.name} sur AlloM3allem`,
       ar: `مرحبًا بك ${user.name} في الومعلم`,

@@ -21,6 +21,7 @@ exports.createAppointment = factory.createOne(
     const employee = await User.findById(doc.employee);
     const client = await User.findById(doc.client);
     await employee.notify('appointment', {
+      image: client.image,
       message: {
         fr: `Vous avez reçu une nouvelle demande de service de ${client.name}`,
         ar: `لقد تلقيت طلب خدمة جديدًا من ${client.name}`,
@@ -34,7 +35,7 @@ exports.createAppointment = factory.createOne(
  */
 exports.myAppointments = factory.getAll(Appointment, {
   toPopulate: [
-    { path: 'contract'},
+    { path: 'contract' },
     { path: 'employee', select: 'name username phone' },
     { path: 'client', select: 'name username phone' },
   ],

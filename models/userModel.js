@@ -9,7 +9,7 @@ const slugify = require('slugify');
 const filterObj = require('../utils/filterObj');
 
 // Models
-const Employee = require('./employeeModel');
+const { Employee } = require('./employeeModel');
 const Client = require('./clientModel');
 const Notification = require('./notificationModel');
 
@@ -90,12 +90,13 @@ const userSchema = new Schema(
       enum: ['active', 'desactive', 'blocked', 'deleted'],
       default: 'desactive',
     },
+    ip: String,
     lastLogInAt: Date,
     linkResetToken: String,
     linkResetTokenExpire: Date,
     passwordChangedAt: {
       type: Date,
-      select: false
+      select: false,
     },
     passwordResetToken: String,
     passwordResetTokenExpire: Date,

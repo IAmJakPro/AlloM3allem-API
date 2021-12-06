@@ -89,7 +89,7 @@ var getIp = function (req) {
   );
   var ip = xForwardedFor || req.connection.remoteAddress;
   console.group('IP: ', ip);
-  return { ip, ...getIpInfo(ip) };
+  return ip;
 };
 
 app.use((req, res, next) => {
@@ -115,9 +115,10 @@ app.use((req, res, next) => {
 
 app.use(requestIp.mw());
 
-app.use(function (req, res) {
+app.use(function (req, res, next) {
   const ip = req.clientIp;
   console.log('Client ip in app: ', ip);
+  next();
 });
 
 // Setup Routes

@@ -9,6 +9,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const xss = require('xss-clean');
+const requestIp = require('request-ip');
 
 // Routing
 const adminRouter = require('./routes/adminRoutes');
@@ -81,9 +82,19 @@ const limiter = rateLimit({
   message: 'Too many requests! Please try again in an hour!',
 });
 
+var getIp = function (req) {
+  var xForwardedFor = (req.headers['x-forwarded-for'] || '').replace(
+    /:\d+$/,
+    ''
+  );
+  var ip = xForwardedFor || req.connection.remoteAddress;
+  console.group('IP: ', ip);
+  return { ip, ...getIpInfo(ip) };
+};
+
 app.use((req, res, next) => {
-  console.log('FIRST REQ: ', req);
-  console.log('END FIRST REQ');
+  console.log('This is before compression: ', getIp(req));
+  next();
 });
 
 // Development Logs
@@ -96,6 +107,18 @@ app.use(compression());
 
 // Routing
 app.use('/api', limiter);
+
+app.use((req, res, next) => {
+  console.log('This is after compression: ', getIp(req));
+  next();
+});
+
+app.use(requestIp.mw());
+
+app.use(function (req, res) {
+  const ip = req.clientIp;
+  console.log('Client ip in app: ', ip);
+});
 
 // Setup Routes
 app.use('/api/admins', adminRouter);

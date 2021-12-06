@@ -69,8 +69,6 @@ var getIpInfo = function (ip) {
 };
 
 var getIp = function (req) {
-  console.log('REQ: ', req);
-  console.log('END REQ');
   var xForwardedFor = (req.headers['x-forwarded-for'] || '').replace(
     /:\d+$/,
     ''
@@ -109,18 +107,17 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(new AppError('Your account is not active yet!', 401));
   }
 
-  console.log(getIp(req));
-  const clientIp = requestIp.getClientIp(req);
-  console.log('Client Ip: ', clientIp);
+  console.log('This is inside login: ', getIp(req));
+  console.log('ClientIP in auth: ', req.clientIp);
 
-  function getipAddress(req) {
+  /* function getipAddress(req) {
     return (
       req.ip ||
       req._remoteAddress ||
       (req.connection && req.connection.remoteAddress) ||
       undefined
     );
-  }
+  } */
 
   console.log('This is how it is: ', getipAddress(req));
 

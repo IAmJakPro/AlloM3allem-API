@@ -1,5 +1,6 @@
 // Third-party libraries
 var geoip = require('geoip-lite');
+const requestIp = require('request-ip');
 
 // Utils
 const asyncHandler = require('../utils/asyncHandler');
@@ -109,6 +110,8 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 
   console.log(getIp(req));
+  const clientIp = requestIp.getClientIp(req);
+  console.log('Client Ip: ', clientIp);
 
   // 4) Update user last login date
   await user.update({ lastLogInAt: new Date(Date.now() + 1000) });

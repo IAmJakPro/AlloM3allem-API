@@ -113,6 +113,17 @@ exports.login = asyncHandler(async (req, res, next) => {
   const clientIp = requestIp.getClientIp(req);
   console.log('Client Ip: ', clientIp);
 
+  function getipAddress(req) {
+    return (
+      req.ip ||
+      req._remoteAddress ||
+      (req.connection && req.connection.remoteAddress) ||
+      undefined
+    );
+  }
+
+  console.log('This is how it is: ', getipAddress(req));
+
   // 4) Update user last login date
   await user.update({ lastLogInAt: new Date(Date.now() + 1000) });
 

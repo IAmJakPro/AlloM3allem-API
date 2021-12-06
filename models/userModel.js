@@ -155,14 +155,6 @@ userSchema.pre('findOneAndUpdate', async function (next) {
 // Document middleware, only works on save() and create()!
 // Doesn't work on update() and insert()!
 userSchema.pre('save', async function (next) {
-  // Only run the encryption if the password is modified.
-  if (this.isModified('password')) {
-    // Encrypt the password with BCRYPT Algorithm.
-    this.password = await bcrypt.hash(this.password, 12);
-    this.passwordChangedAt = new Date(Date.now() + 1000);
-    return next();
-  }
-
   // Generate username
   const slugifiedName = slugify(this.name, {
     lower: true,
@@ -184,6 +176,14 @@ userSchema.pre('save', async function (next) {
   // Automatically create a client item in db
   if (this.type === 'client') {
     await Client.create({ user: this._id });
+  }
+
+  // Only run the encryption if the password is modified.
+  if (this.isModified('password')) {
+    // Encrypt the password with BCRYPT Algorithm.
+    this.password = await bcrypt.hash(this.password, 12);
+    this.passwordChangedAt = new Date(Date.now() + 1000);
+    return next();
   }
 
   next();

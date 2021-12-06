@@ -109,7 +109,7 @@ exports.uploadUserImage = asyncHandler(async (req, res, next) => {
 exports.createUser = factory.createOne(User, {}, async (user) => {
   const settings = await Setting.findOne().select('logo');
   await user.notify('welcome', {
-    image: setting.logo,
+    image: settings.logo,
     message: {
       fr: `Bienvenu ${user.name} sur AlloM3allem`,
       ar: `مرحبًا بك ${user.name} في الومعلم`,

@@ -60,8 +60,8 @@ exports.createAndSendToken = (cookieKey, user, statusCode, req, res) => {
     token,
     cookieKey,
     role,
-    id: user._id.toString(),
-    data: {} /* user.toClient() */,
+    //id: user._id.toString(),
+    data: user.toClient(),
   });
 };
 

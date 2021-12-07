@@ -39,6 +39,10 @@ const { getHeaderLang } = require('./utils/factory');
 // Application Setup.
 const app = express();
 
+app.use((req, res, next) => {
+  console.log('New request!');
+});
+
 // Global Middlewares.
 // Enable CORS (Access-Control-Allow-Origin: only from the client!)
 app.use(cors());

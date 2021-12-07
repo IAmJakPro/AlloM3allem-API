@@ -49,10 +49,10 @@ app.use(cors());
 app.options('*', cors());
 
 // Trust Proxies
-app.enable('trust proxy', true);
+//app.enable('trust proxy', true);
 
 // Security Headers
-app.use(helmet());
+//app.use(helmet());
 
 // Body Parser
 //app.use(express.json({ limit: '10kb' }));

@@ -90,7 +90,7 @@ const userSchema = new Schema(
       enum: ['active', 'desactive', 'blocked', 'deleted'],
       default: 'desactive',
     },
-    ip: String,
+    ips: [String],
     lastLogInAt: Date,
     linkResetToken: String,
     linkResetTokenExpire: Date,

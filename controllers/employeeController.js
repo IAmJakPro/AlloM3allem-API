@@ -117,8 +117,6 @@ exports.getAllEmployees = factory.getAllAggregate(
     const { city = 'all', service = 'all' } = req.query;
     const clientIp = requestIp.getClientIp(req);
 
-    console.log(req.query);
-
     const search = await Search.create({
       ip: clientIp,
       city,

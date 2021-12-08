@@ -55,32 +55,15 @@ exports.signup = asyncHandler(async (req, res, next) => {
   });
 });
 
-var getIpInfo = function (ip) {
-  // IPV6 addresses can include IPV4 addresses
-  // So req.ip can be '::ffff:86.3.182.58'
-  // However geoip-lite returns null for these
-  if (ip.includes('::ffff:')) {
-    ip = ip.split(':').reverse()[0];
-  }
-  var lookedUpIP = geoip.lookup(ip);
-  if (ip === '127.0.0.1' || ip === '::1') {
-    return { error: "This won't work on localhost" };
-  }
-  if (!lookedUpIP) {
-    return { error: 'Error occured while trying to process the information' };
-  }
-  return lookedUpIP;
-};
-
-var getIp = function (req) {
-  var xForwardedFor = (req.headers['x-forwarded-for'] || '').replace(
-    /:\d+$/,
-    ''
+function getipAddress(req) {
+  return (
+    req.ip ||
+    req._remoteAddress ||
+    (req.connection && req.connection.remoteAddress) ||
+    req.headers['x-forwarded-for'] ||
+    undefined
   );
-  var ip = xForwardedFor || req.connection.remoteAddress;
-  console.group('IP: ', ip);
-  return { ip, ...getIpInfo(ip) };
-};
+}
 
 /**
  * This function is used to handle user when he/she is logging in.
@@ -111,22 +94,17 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(new AppError('Your account is not active yet!', 401));
   }
 
-  console.log('This is inside login: ', getIp(req));
-  console.log('ClientIP in auth: ', req.clientIp);
-
-  function getipAddress(req) {
-    return (
-      req.ip ||
-      req._remoteAddress ||
-      (req.connection && req.connection.remoteAddress) ||
-      undefined
-    );
+  console.log('This is how it is: ', getipAddress(req));
+  const clientIp = requestIp.getClientIp(req);
+  console.log('Client ip: ', clientIp);
+  const ip = clientIp;
+  const userIps = user.ips;
+  if (!userIps.includes(ip)) {
+    userIps.push(ip);
   }
 
-  console.log('This is how it is: ', getipAddress(req));
-
   // 4) Update user last login date
-  await user.update({ lastLogInAt: new Date(Date.now() + 1000) });
+  await user.update({ lastLogInAt: new Date(Date.now() + 1000), ips: userIps });
 
   // 5) If it is true, send token back to client.
   authController.createAndSendToken('jwtUser', user, 200, req, res);

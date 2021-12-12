@@ -34,7 +34,6 @@ notificationSchema.virtual('read').get(function () {
 
 notificationSchema.method('toClient', function (isAdmin, lang) {
   const obj = this.toObject({ getters: true });
-  console.log(lang);
 
   if (lang) {
     if (obj.data.message) {

@@ -8,10 +8,6 @@ const settingSchema = new Schema({
     fr: { type: String, required: true },
     ar: { type: String, required: true },
   },
-  description: {
-    fr: String,
-    ar: String,
-  },
   email: String,
   address: {
     fr: String,
@@ -41,20 +37,29 @@ const settingSchema = new Schema({
     body_start: String,
     body_end: String,
   },
+  seo: {
+    description: {
+      fr: String,
+      ar: String,
+    },
+    url: String,
+    keywords: String,
+  },
 });
 
 settingSchema.method('toClient', function (isAdmin, lang) {
   let obj = this.toObject({ getters: true });
-
   if (lang) {
     if (obj.title) {
       obj.title = obj.title[lang];
     }
-    if (obj.description) {
-      obj.description = obj.description[lang];
-    }
     if (obj.address) {
       obj.address = obj.address[lang];
+    }
+    if (obj.seo && obj.seo.description) { 
+      if (obj.seo.description) {
+        obj.seo.description = obj.seo.description[lang];
+      }
     }
   }
 

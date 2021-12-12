@@ -55,6 +55,7 @@ const uploadImage = (file, bucketFolder) =>
  * @returns
  */
 const deleteImage = async (fileName) => {
+  if (fileName === 'users/avatar.png') return;
   const blob = bucket.file(fileName);
   return blob
     .delete()

@@ -7,6 +7,7 @@ const slugify = require('slugify');
 
 // Utils
 const filterObj = require('../utils/filterObj');
+const { deleteImage } = require('../utils/uploadHelper');
 
 // Models
 const { Employee } = require('./employeeModel');
@@ -198,6 +199,9 @@ userSchema.post('findOneAndDelete', async function (doc) {
   if (doc.type === 'client') {
     await Client.findOneAndDelete({ user: doc._id });
   }
+
+  const splitted = doc.image.split('/');
+  await deleteImage(`users/${splitted[splitted.length - 1]}`);
 });
 
 // Method to notify the user

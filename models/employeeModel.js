@@ -4,6 +4,7 @@ const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
 
 // Utils
 const filterObj = require('../utils/filterObj');
+const { deleteImage } = require('../utils/uploadHelper');
 
 const { Schema } = mongoose;
 
@@ -99,6 +100,15 @@ function onlyActiveUsers(next) {
 employeeSchema.pre(/^find/, async function (next) {
   this.populate('workIn', 'name').populate('service', 'name');
   next();
+});
+
+employeeSchema.post('findOneAndDelete', async (doc) => {
+  for (let portfolio of doc.portfolio) {
+    for (let image of portfolio.images) {
+      const splited = image.split('/');
+      await deleteImage(`portfolio/${splited[splited.length - 1]}`);
+    }
+  }
 });
 
 employeeSchema.method('toClient', function (isAdmin, lang) {

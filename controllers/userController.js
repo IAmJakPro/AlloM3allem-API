@@ -3,7 +3,7 @@ const factory = require('../utils/factory');
 const asyncHandler = require('../utils/asyncHandler');
 const AppError = require('../utils/appError');
 const filterObj = require('../utils/filterObj');
-const { uploadImage } = require('../utils/uploadHelper');
+const { uploadImage, deleteImage } = require('../utils/uploadHelper');
 
 // Models
 const User = require('../models/userModel');
@@ -37,12 +37,17 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   );
 
   // 3) Update the account.
-  let updatedAccount;
+
   if (Object.keys(filteredAccountBody).length > 0) {
-    updatedAccount = await User.findByIdAndUpdate(
+    const updatedAccount = await User.findByIdAndUpdate(
       req.user._id,
       filteredAccountBody
     );
+  }
+
+  if (req.body.image) {
+    const splitted = req.user.image.split('/');
+    await deleteImage(`users/${splitted[splitted.length - 1]}`);
   }
 
   if (req.user.type === 'employee') {

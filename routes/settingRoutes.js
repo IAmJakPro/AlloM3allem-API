@@ -14,6 +14,8 @@ const router = express.Router();
 
 router.get('/', settingController.getSettings);
 
+router.get('/general', settingController.getGeneralSettings);
+
 router.use(authMiddleware.checkLoggedAdmin);
 router.use(authMiddleware.routeGuard('super_admin', 'admin'));
 

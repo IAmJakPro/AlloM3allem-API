@@ -30,6 +30,23 @@ exports.getSettings = asyncHandler(async (req, res, next) => {
   });
 });
 
+exports.getGeneralSettings = asyncHandler(async (req, res, next) => {
+  const settings = await Setting.findOne().select(
+    'title description logo icon tracking url maintenance_mode'
+  );
+  const isAdmin = factory.isAdmin(req);
+  const lang = factory.getHeaderLang(req.headers);
+
+  res.status(200).json({
+    status: 'success',
+    data: settings.toClient(isAdmin, lang),
+  });
+});
+
+/* exports.getFooterSettings = asyncHandler(async (req, res, next) => {
+  const settings = await Setting.findOne().select('apps socials ');
+}); */
+
 /**
  * Update a single Setting
  */

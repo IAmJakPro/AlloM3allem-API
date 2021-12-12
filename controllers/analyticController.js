@@ -11,6 +11,7 @@ const Appointment = require('../models/appointmentModel');
 const Contract = require('../models/contractModel');
 const Contact = require('../models/contactModel');
 const Report = require('../models/reportModel');
+const Search = require('../models/searchModel');
 
 exports.getCounts = asyncHandler(async (req, res, next) => {
   const employeesCount = await User.find({
@@ -71,5 +72,104 @@ exports.getAnalytics = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: results,
+  });
+});
+
+exports.getGenders = asyncHandler(async (req, res, next) => {
+  const malesCount = await User.find({
+    sexe: 'm',
+    type: 'employee',
+  }).countDocuments();
+  const femalesCount = await User.find({
+    sexe: 'f',
+    type: 'employee',
+  }).countDocuments();
+  const nonesCount = await User.find({
+    sexe: 'none',
+    type: 'employee',
+  }).countDocuments();
+
+  res.status(200).json({
+    status: 'success',
+    data: [
+      {
+        sexe: 'Male',
+        count: malesCount,
+      },
+      {
+        count: femalesCount,
+        sexe: 'Female',
+      },
+      {
+        count: nonesCount,
+        sexe: 'None',
+      },
+    ],
+  });
+});
+
+exports.getTopSearchedCities = asyncHandler(async (req, res, next) => {
+  const analytics = await Search.aggregate([
+    {
+      $group: {
+        _id: '$city',
+        count: { $sum: 1 },
+        results: { $push: '$$ROOT' },
+      },
+    },
+    { $project: { _id: 0, city: '$_id', count: 1 } },
+    { $sort: { count: -1 } },
+    { $limit: 5 },
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: analytics,
+  });
+});
+exports.getTopSearchedServices = asyncHandler(async (req, res, next) => {
+  const analytics = await Search.aggregate([
+    {
+      $group: {
+        _id: '$service',
+        count: { $sum: 1 },
+        results: { $push: '$$ROOT' },
+      },
+    },
+    { $project: { _id: 0, service: '$_id', count: 1 } },
+    { $sort: { count: -1 } },
+    { $limit: 5 },
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: analytics,
+  });
+});
+
+exports.getSearches = asyncHandler(async (req, res, next) => {
+  const analytics = await Search.aggregate([
+    {
+      $group: {
+        _id: {
+          service: '$service',
+          city: '$city',
+        },
+        count: { $sum: 1 },
+        results: { $push: '$$ROOT' },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        service: '$_id.service',
+        city: '$_id.city',
+        count: 1,
+      },
+    },
+    { $sort: { count: -1 } },
+    { $limit: 100 },
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: analytics,
   });
 });

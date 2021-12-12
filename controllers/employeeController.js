@@ -113,14 +113,17 @@ exports.getAllEmployees = factory.getAllAggregate(
     image: '$user.image',
     service: lang === 'fr' ? '$service.name.fr' : '$service.name.ar',
   }),
-  async (req) => {
-    const { city = 'all', service = 'all' } = req.query;
+  async (req, docs) => {
+    console.log(req.query);
+    const { workIn = 'all', service = 'all' } = req.query;
     const clientIp = requestIp.getClientIp(req);
+    console.log(clientIp);
 
     const search = await Search.create({
       ip: clientIp,
-      city,
+      city: workIn,
       service,
+      foundResults: docs.pagination.totalRecords,
       user: req.user && req.user._id ? req.user._id : null,
     });
   }

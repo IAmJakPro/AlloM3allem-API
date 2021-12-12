@@ -420,7 +420,7 @@ exports.getAllAggregate = (Model, aggregateOtions, project, callback) =>
     // 5) Paginate and execute aggregation
     const result = await Model.aggregatePaginate(myAggregate, options);
 
-    callback(req);
+    callback(req, result);
 
     // 6) Return the json response
     return res.status(200).json({ status: 'success', ...result });
